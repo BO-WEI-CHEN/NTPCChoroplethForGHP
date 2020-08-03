@@ -1,5 +1,7 @@
 {
     "workbench.colorTheme": "Tomorrow Night Blue",
     "workbench.preferredDarkColorTheme": "Kimbie Dark",
-    "workbench.preferredHighContrastColorTheme": "Abyss"
+    "workbench.preferredHighContrastColorTheme": "Abyss",
+    "powermode.enabled": true,
+    "powermode.presets": "exploding-rift"
 }
