@@ -6,120 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: 'Microsoft JhengHei', serif;
-        }
-
-        .nation-border,
-        .state-border,
-        .county-border {
-            fill: none;
-            stroke: #FFFFFF;
-        }
-
-        .county-border {
-            stroke-width: 0.087px;
-            pointer-events: all;
-            stroke-linejoin: round;
-            stroke-linecap: round;
-        }
-
-        .nation-border,
-        .state-border {
-            stroke-width: 0.5px;
-            pointer-events: none;
-        }
-
-        .background {
-            fill: #37474F;
-            fill-opacity: 1.0;
-        }
-
-        .tooltip {
-            top: 100px;
-            left: 100px;
-            -moz-border-radius: 5px;
-            border-radius: 5px;
-            /*border: 2px solid #000;*/
-            background: #333;
-            opacity: .9;
-            color: white;
-            padding: 10px;
-            min-width: 375px;
-            min-width: 36.75vmin;
-            font-size: 2.25vmin;
-            line-height: 24pt;
-            font-family: 'Microsoft JhengHei', serif;
-            font-weight: lighter;
-            visibility: visible;
-        }
-
-        .tooltip.right::before {
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            position: absolute;
-            opacity: .9;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            border-left: 8px solid #333;
-            right: -8px;
-            top: 35px;
-            /* arbitrarily set */
-        }
-
-        .tooltip.left::before {
-            content: '';
-            display: block;
-            width: 0;
-            height: 0;
-            position: absolute;
-            opacity: .9;
-            border-top: 8px solid transparent;
-            border-bottom: 8px solid transparent;
-            left: -8px;
-            border-right: 8px solid #333;
-            top: 35px;
-            /* arbitrarily set */
-        }
-
-        /* SVG Scaling */
-        /*body,*/
-        /*svg {*/
-        /*    height: 100%;*/
-        /*    margin: 0;*/
-        /*    width: 100%;*/
-        /*    float: left;*/
-        /*}*/
-
-        .scaling-svg-container {
-            position: relative;
-            height: 0;
-            width: 100%;
-            padding: 0
-        }
-
-        .scaling-svg {
-            position: absolute;
-            height: 99%;
-            width: 100%;
-            left: 0;
-            top: 0
-        }
-    </style>
-
+    <link rel="stylesheet" href="css/GHPGIS.css">
 </head>
 
-
 <body>
-
     <div class="container">
         <div class="row">
             <div class="col-xs-12 col-md-12">
                 <div id="title" class="page-header">
-                    <h2>民眾檢舉案件面量圖 <small></small>
+                    <h2>案件面量圖 <small>民眾檢舉、專案以及政策執行狀況</small>
                     </h2>
                 </div>
             </div>
@@ -127,7 +22,7 @@
         <div class="row">
             <div class="col-xs-4 col-md-4">
                 <div class="form-group">
-                    <label for="dimensions" class="col-form-label">Factor </label>
+                    <label for="dimensions" class="col-form-label">案件來源 </label>
                     <select class="form-control" id="dimensions"></select>
                 </div>
             </div>
@@ -153,11 +48,11 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/spin.js/2.0.1/spin.min.js" type="text/javascript"></script>
-    <script src="https://d3js.org/d3.v4.min.js" type="text/javascript"></script>
-    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js" type="text/javascript"></script>
-    <script src="https://unpkg.com/topojson-client@3" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.11.0/d3-legend.js" type="text/javascript"></script>
+    <script src="js/spin.min.js" type="text/javascript"></script>
+    <script src="js/d3.v4.min.js" type="text/javascript"></script>
+    <script src="js/d3-scale-chromatic.v1.min.js" type="text/javascript"></script>
+    <script src="js/topojson-client@3.js" type="text/javascript"></script>
+    <script src="js/d3-legend.js" type="text/javascript"></script>
     <script defer type="text/javascript">
         "use strict";
 
@@ -169,142 +64,12 @@
             "countywinrate": {
                 "label": "County Win Rate",
                 "type": "percentage",
-                "format": ".1%",
+                "format": ".0%",
                 "title": "2016 Presidential Election Results",
                 "latestyear": "2016",
                 "url": "https://github.com/tonmcg/County_Level_Election_Results_12-16",
                 "source": "Tony McGovern GitHub Repo",
                 "description": "Results of the 2016 Presidential General Election."
-            },
-            "ratenaturalincrease": {
-                "label": "Natural Increase Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Rate of Natural Increase",
-                "latestyear": "2016",
-                "url": "https://www.census.gov/data/tables/2016/demo/popest/counties-total.html",
-                "source": "U.S. Census Bureau, Population Division",
-                "description": "Births minus deaths. The rate of natural increase expresses natural increase during a specified time period as a proportion of an area's population at the midpoint of the time period. Rates are expressed per 1,000 population."
-            },
-            "netmigration": {
-                "label": "Net Migration Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Net Migration Rate",
-                "latestyear": "2016",
-                "url": "https://www.census.gov/data/tables/2016/demo/popest/counties-total.html",
-                "source": "U.S. Census Bureau, Population Division",
-                "description": "The difference between the number of migrants entering and those leaving a country in a year, per 1,000 midyear population. May also be expressed in percent. A positive figure is known as a net immigration rate and a negative figure as a net emigration rate."
-            },
-            "primarycare": {
-                "label": "PCP Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Primary care physicians",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/primary-care-physicians",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Primary Care Physicians is the ratio of the population to total primary care physicians. Primary care physicians include non-federal, practicing physicians (M.D.'s and D.O.'s) under age 75 specializing in general practice medicine, family medicine, internal medicine, and pediatrics."
-            },
-            "votingagepopulation": {
-                "label": "Voting Age Population",
-                "type": "number",
-                "format": ".2s",
-                "title": "Voting Age Population",
-                "latestyear": "2015",
-                "url": "https://www.census.gov/rdo/data/voting_age_population_by_citizenship_and_race_cvap.html",
-                "source": "U.S. Census Bureau, ACS Demographic and Housing Estimates",
-                "description": "Special tabulation providing data on the citizen voting age population per county."
-            },
-            "population": {
-                "label": "Population",
-                "type": "number",
-                "format": ".2s",
-                "title": "Population",
-                "latestyear": "2015",
-                "url": "https://www2.census.gov/programs-surveys/popest/datasets/2010-2016/counties/totals/",
-                "source": "U.S. Census Bureau",
-                "description": "Population estimates totals provided by the Census Bureau and are as of 2016"
-            },
-            "averagepollution": {
-                "label": "Average Daily PM2.5",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Air pollution-particulate matter",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/air-pollution-particulate-matter",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Particulate Matter is the average daily density of fine particulate matter in micrograms per cubic meter (PM2.5) in a county. Fine particulate matter is defined as particles of air pollutants with an aerodynamic diameter less than 2.5 micrometers. These particles can be directly emitted from sources such as forest fires, or they can form when gases emitted from power plants, industries and automobiles react in the air."
-            },
-            "mentalhealth": {
-                "label": "MHP Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Mental health providers",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/mental-health-providers",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Mental Health Providers is the ratio of the county population to the number of mental health providers including psychiatrists, psychologists, licensed clinical social workers, counselors, marriage and family therapists, mental health providers that treat alcohol and other drug abuse, and advanced practice nurses specializing in mental health care. In 2015, marriage and family therapists and mental health providers that treat alcohol and other drug abuse were added to this measure."
-            },
-            "unemployment": {
-                "label": "% Unemployed",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Unemployment rate",
-                "latestyear": "2015",
-                "url": "https://www.bls.gov/lau/laucnty16.txt",
-                "source": "Bureau of Labor Statistics",
-                "description": "Taken from the Local Area Unemployment Statistics (LAUS) program, the Unemployment Rate is a monthly estimate of total employment and unemployment for approximately 7,500 areas, including county and county equivalents."
-            },
-            "uninsured": {
-                "label": "% Uninsured",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Uninsured",
-                "latestyear": "2015",
-                "url": "https://www.census.gov/did/www/sahie/",
-                "source": "U.S. Census Bureau, Small Area Health Insurance Estimates (SAHIE)",
-                "description": "Uninsured is the percentage of the population under age 65 that has no health insurance coverage. The Small Area Health Insurance Estimates uses the American Community Survey (ACS) definition of insured"
-            },
-            "adultsmoking": {
-                "label": "% Smokers",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Adult smoking",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/adult-smoking",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Adult Smoking is the percentage of the adult population that currently smokes every day or most days and has smoked at least 100 cigarettes in their lifetime."
-            },
-            "childreninsingleparent": {
-                "label": "% Single-Parent Households",
-                "type": "percentage",
-                "format": ".0%",
-                "title": "Children in single-parent households",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/children-single-parent-households",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Children in Single-Parent Households is the percentage of children in family households where the household is headed by a single parent (male or female head of household with no spouse present)."
-            },
-            "poorfair": {
-                "label": "% Fair Poor",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Poor or fair health",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/poor-or-fair-health",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Self-reported health status is a general measure of health-related quality of life (HRQoL) in a population. This measure is based on survey responses to the question: “In general, would you say that your health is excellent, very good, good, fair, or poor?” The value reported in the County Health Rankings is the percentage of adult respondents who rate their health “fair” or “poor.” The measure is modeled and age-adjusted to the 2000 US population."
-            },
-            "violentcrime": {
-                "label": "Violent Crime Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Violent crime rate",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/violent-crime-rate",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Violent Crime is the number of violent crimes reported per 100,000 population. Violent crimes are defined as offenses that involve face-to-face confrontation between the victim and the perpetrator, including homicide, rape, robbery, and aggravated assault."
             },
             "income": {
                 "label": "Income Ratio",
@@ -316,195 +81,15 @@
                 "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
                 "description": "Income Inequality is the ratio of household income at the 80th percentile to that at the 20th percentile, i.e., when the incomes of all households in a county are listed from highest to lowest, the 80th percentile is the level of income at which only 20% of households have higher incomes, and the 20th percentile is the level of income at which only 20% of households have lower incomes. A higher inequality ratio indicates greater division between the top and bottom ends of the income spectrum."
             },
-            "somecollege": {
-                "label": "% Some College",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Some college",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/some-college",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Some College is the percentage of the population ages 25-44 with some post-secondary education, such as enrollment in vocational/technical schools, junior colleges, or four-year colleges. It includes individuals who pursued education following high school but did not receive a degree."
-            },
-            "poormentalhealth": {
-                "label": "Mentally Unhealthy Days",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Poor mental health days",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/poor-mental-health-dayss",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Poor Mental Health Days is based on survey responses to the question: “Thinking about your mental health, which includes stress, depression, and problems with emotions, for how many days during the past 30 days was your mental health not good?” The value reported in the County Health Rankings is the average number of days a county’s adult respondents report that their mental health was not good. The measure is age-adjusted to the 2000 US population."
-            },
-            "poorphysicalhealth": {
-                "label": "Physically Unhealthy Days",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Poor physical health days",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/poor-physical-health-days",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Poor Physical Health Days is based on survey responses to the question: “Thinking about your physical health, which includes physical illness and injury, for how many days during the past 30 days was your physical health not good?” The value reported in the County Health Rankings is the average number of days a county’s adult respondents report that their physical health was not good. The measure is age-adjusted to the 2000 US population."
-            },
-            "physicallyinactive": {
-                "label": "% Physically Inactive",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Physical inactivity",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/physical-inactivity",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Physical Inactivity is the percentage of adults age 20 and over reporting no leisure-time physical activity. Examples of physical activities provided include running, calisthenics, golf, gardening, or walking for exercise."
-            },
-            "medianhouseholdincome": {
-                "label": "Household Income",
-                "type": "number",
-                "format": "$.2s",
-                "title": "Median household income",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/median-household-income",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Median Household Income is the income where half of households in a county earn more and half of households earn less."
-            },
-            "longcommute": {
-                "label": "% Long Commute/Drives Alone",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Long Commute-Driving Alone",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/long-commute-driving-alone",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Long Commute - Driving Alone is the percentage of commuters, among those who commute to work by car, truck, or van alone, who drive longer than 30 minutes to work each day."
-            },
-            "residentialsegregation": {
-                "label": "Black/White Segregation index",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Residential segregation - black/white",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/residential-segregation-blackwhite",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Racial/ethnic residential segregation refers to the degree to which two or more groups live separately from one another in a geographic area. The index of dissimilarity is a demographic measure of the evenness with which two groups (black and white residents, in this case) are distributed across the component geographic areas (census tracts, in this case) that make up a larger area (counties, in this case). The index score can be interpreted as the percentage of either black or white residents that would have to move to different geographic areas in order to produce a distribution that matches that of the larger area."
-            },
             "dailysunlight": {
                 "label": "Average Daily Sunlight",
                 "type": "number",
-                "format": ",.2f",
+                "format": ",.1f",
                 "title": "Daily Sunlight (KJ/m²) (1979-2011)",
                 "latestyear": "2015",
                 "url": "https://wonder.cdc.gov/NASA-INSOLAR.html",
                 "source": "North America Land Data Assimilation System (NLDAS)",
                 "description": "The North America Land Data Assimilation System (NLDAS) Daily Sunlight data available on CDC WONDER are county-level daily sunlight (insolation or solar radiation) observations spanning the years 1979-2011. Reported measures are the average daily insolation, reported in kilojoules per square meter (KJ/m2), the number of observations, and the range for the daily insolation values."
-            },
-            "drugoverdose": {
-                "label": "Drug Overdose Mortality Rate",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Drug overdose deaths",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/drug-overdose-deaths",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Drug Overdose Deaths are the number of deaths due to drug poisoning per 100,000 population. ICD-10 codes used include X40-X44, X60-X64, X85, and Y10-Y14. These codes cover accidental, intentional, and undetermined poisoning by and exposure to: 1) nonopioid analgesics, antipyretics and antirheumatics, 2) antiepileptic, sedative-hypnotic, antiparkinsonism and psychotropic drugs, not elsewhere classified, 3) narcotics and psychodysleptics [hallucinogens], not elsewhere classified, 4) other drugs acting on the autonomic nervous system, and 5) other and unspecified drugs, medicaments and biological substances."
-            },
-            "obesity": {
-                "label": "% Obese",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Obesity rate",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/adult-obesity",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Adult Obesity is the percentage of the adult population (age 20 and older) that reports a body mass index (BMI) greater than or equal to 30 kg/m2."
-            },
-            "foodenvironment": {
-                "label": "Food Environment Index",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Food environment index",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/food-environment-index",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "The Food Environment Index ranges from 0 (best) to 10 (worst) and equally weights two indicators of the food environment:\n1) Limited access to healthy foods estimates the percentage of the population that is low income and does not live close to a grocery store. Living close to a grocery store is defined differently in rural and nonrural areas; in rural areas, it means living less than 10 miles from a grocery store whereas in nonrural areas, it means less than 1 mile. Low income is defined as having an annual family income of less than or equal to 200 percent of the federal poverty threshold for the family size.\n2) Food insecurity estimates the percentage of the population who did not have access to a reliable source of food during the past year. A two-stage fixed effects model was created using information from the Community Population Survey, Bureau of Labor Statistics, and American Community Survey."
-            },
-            "dentist": {
-                "label": "Dentist Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Dentist",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/dentists",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Dentists are measured as the ratio of the county population to total dentists in the county."
-            },
-            "socialassociation": {
-                "label": "Association Rate",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Social association",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/social-associations",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Social Associations is the number of associations per 10,000 population. Associations include membership organizations such as civic organizations, bowling centers, golf clubs, fitness centers, sports organizations, religious organizations, political organizations, labor organizations, business organizations, and professional organizations."
-            },
-            "teenbirth": {
-                "label": "Teen Birth Rate",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Teen births",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/teen-births",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Teen Births are the number of births per 1,000 female population, ages 15-19."
-            },
-            "excessivedrink": {
-                "label": "% Excessive Drinking",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Excessive drinking",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/excessive-drinking",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Excessive Drinking is the percentage of adults that report either binge drinking, defined as consuming more than 4 (women) or 5 (men) alcoholic beverages on a single occasion in the past 30 days, or heavy drinking, defined as drinking more than one (women) or 2 (men) drinks per day on average."
-            },
-            "severehousingproblems": {
-                "label": "% Severe Housing Problems",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Severe housing problems",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/severe-housing-problems",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Severe Housing Problems is the percentage of households with at least one or more of the following housing problems:\nhousing unit lacks complete kitchen facilities;\nhousing unit lacks complete plumbing facilities;\nhousehold is severely overcrowded; or\nhousehold is severely cost burdened.\nSevere overcrowding is defined as more than 1.5 persons per room. Severe cost burden is defined as monthly housing costs (including utilities) that exceed 50% of monthly income."
-            },
-            "numberofproviders": {
-                "label": "Providers",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Number of ACA Proviers",
-                "latestyear": "2015",
-                "url": "http://www.rwjf.org/en/library/research/2017/04/hix-compare-2014-2017-datasets.html",
-                "source": "Robert Wood Johnson Foundation",
-                "description": "HIX Compare includes information on premiums, deductibles and out-of-pocket maximums, as well as cost-sharing requirements for primary care and specialist visits, prescription drugs, emergency room services and inpatient and outpatient visits for all plans across all 50 states and the District of Columbia."
-            },
-            "diabetes": {
-                "label": "% Receiving HbA1c",
-                "type": "percentage",
-                "format": ".1%",
-                "title": "Diabetes monitoring",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/diabetes-monitoring",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Diabetes Monitoring is the percentage of diabetic fee-for-service Medicare patients ages 65-75 whose blood sugar control was not monitored in the past year using a test of their glycated hemoglobin (HbA1c) levels. Note: this differs from the original measure that reported the number of patients who had received testing in the last year."
-            },
-            "sexuallytransmitted": {
-                "label": "Chlamydia Rate",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Sexually transmitted infection rate",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/sexually-transmitted-infection-rate",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Sexually Transmitted Infections (STI) are measured as the chlamydia incidence (number of new cases reported) per 100,000 population."
             }
         };
 
@@ -548,10 +133,10 @@
             .shapeWidth(width / 10)
             .cells(9)
             .orient("horizontal")
-            .labelOffset(3)
+            .labelOffset(10)
             .ascending(true)
             .labelAlign("middle")
-            .shapePadding(2);
+            .shapePadding(5);
 
         let svg = d3.select("svg")
             .attr("width", width)
@@ -681,7 +266,6 @@
                             return '#ccc';
                         }
                     });
-
             }
 
             // define zoom function

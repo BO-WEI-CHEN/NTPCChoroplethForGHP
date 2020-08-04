@@ -1,7 +1,12 @@
 {
-    "workbench.colorTheme": "Tomorrow Night Blue",
-    "workbench.preferredDarkColorTheme": "Kimbie Dark",
-    "workbench.preferredHighContrastColorTheme": "Abyss",
+    "workbench.colorTheme": "monokai-chacoral",
+    "workbench.preferredDarkColorTheme": "dark-plus-syntax",
+    "workbench.preferredHighContrastColorTheme": "Solarized Light",
     "powermode.enabled": true,
-    "powermode.presets": "exploding-rift"
+    "powermode.presets": "particles",
+    // 抖動
+    "powermode.enableShake": false,
+    "powermode.backgroundMode": "mask",
+    "powermode.explosionSize": 20,
+    "editor.wordWrap": "on"
 }
