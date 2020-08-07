@@ -1,83 +1,86 @@
 body {
-    font-family: 'Microsoft JhengHei';
+  font-family: "Microsoft JhengHei";
 }
 
-g>text {
-    fill: #FFFFFF;
-    font-size: large;
-    font-weight: bolder;
-    font-family: 'Microsoft JhengHei';
+g > text {
+  fill: #ffffff;
+  font-size: large;
+  font-weight: bolder;
+  font-family: "Microsoft JhengHei";
 }
 
-.nation-border, .state-border, .county-border {
-    fill: none;
-    stroke: #FFFFFF;
+.nation-border,
+.state-border,
+.county-border {
+  fill: none;
+  stroke: #ffffff;
 }
 
 .county-border {
-    stroke-width: 0.087px;
-    pointer-events: all;
-    stroke-linejoin: round;
-    stroke-linecap: round;
+  stroke-width: 0.087px;
+  pointer-events: all;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
-.nation-border, .state-border {
-    stroke-width: 0.5px;
-    pointer-events: none;
+.nation-border,
+.state-border {
+  stroke-width: 0.5px;
+  pointer-events: none;
 }
 
 .background {
-    fill: #37474F;
-    fill-opacity: 1.0;
+  fill: #37474f;
+  fill-opacity: 1;
 }
 
 .tooltip {
-    top: 100px;
-    left: 100px;
-    -moz-border-radius: 5px;
-    border-radius: 5px;
-    /*border: 2px solid #000;*/
-    background: #333;
-    opacity: .9;
-    color: white;
-    padding: 10px;
-    min-width: 375px;
-    min-width: 36.75vmin;
-    font-size: 2.25vmin;
-    line-height: 24pt;
-    font-family: 'Microsoft JhengHei', serif;
-    font-weight: lighter;
-    visibility: visible;
+  top: 100px;
+  left: 100px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  /*border: 2px solid #000;*/
+  background: #333;
+  opacity: 0.9;
+  color: white;
+  padding: 10px;
+  min-width: 375px;
+  min-width: 36.75vmin;
+  font-size: 2.25vmin;
+  line-height: 24pt;
+  font-family: "Microsoft JhengHei", serif;
+  font-weight: lighter;
+  visibility: visible;
 }
 
 .tooltip.right::before {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    position: absolute;
-    opacity: .9;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-left: 8px solid #333;
-    right: -8px;
-    top: 35px;
-    /* arbitrarily set */
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  opacity: 0.9;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #333;
+  right: -8px;
+  top: 35px;
+  /* arbitrarily set */
 }
 
 .tooltip.left::before {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    position: absolute;
-    opacity: .9;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    left: -8px;
-    border-right: 8px solid #333;
-    top: 35px;
-    /* arbitrarily set */
+  content: "";
+  display: block;
+  width: 0;
+  height: 0;
+  position: absolute;
+  opacity: 0.9;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  left: -8px;
+  border-right: 8px solid #333;
+  top: 35px;
+  /* arbitrarily set */
 }
 
 /* SVG Scaling */
@@ -97,16 +100,16 @@ g>text {
 /*}*/
 
 .scaling-svg-container {
-    position: relative;
-    height: 0;
-    width: 100%;
-    padding: 0
+  position: relative;
+  height: 0;
+  width: 100%;
+  padding: 0;
 }
 
 .scaling-svg {
-    position: absolute;
-    height: 99%;
-    width: 100%;
-    left: 0;
-    top: 0
+  position: absolute;
+  height: 99%;
+  width: 100%;
+  left: 0;
+  top: 0;
 }

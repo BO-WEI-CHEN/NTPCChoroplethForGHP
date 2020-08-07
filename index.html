@@ -1,469 +1,558 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title></title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/GHPGIS.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="css/GHPGIS.css" />
+  </head>
 
-<body>
+  <body>
     <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-md-12">
-                <div id="title" class="page-header">
-                    <h2>案件面量圖 <small>民眾檢舉、專案以及政策執行狀況</small>
-                    </h2>
-                </div>
-            </div>
+      <div class="row">
+        <div class="col-xs-12 col-md-12">
+          <div id="title" class="page-header">
+            <h2>案件面量圖 <small>民眾檢舉、專案以及政策執行狀況</small></h2>
+          </div>
         </div>
-        <div class="row">
-            <div class="col-xs-4 col-md-4">
-                <div class="form-group">
-                    <label for="dimensions" class="col-form-label">案件來源 </label>
-                    <select class="form-control" id="dimensions"></select>
-                </div>
-            </div>
-            <div class="col-xs-8 col-md-8"></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-4 col-md-4">
+          <div class="form-group">
+            <label for="dimensions" class="col-form-label">案件來源 </label>
+            <select class="form-control" id="dimensions"></select>
+          </div>
         </div>
-        <div class="row" id="canvas">
-            <div class="col-md-9 col-xs-9">
-                <div class="scaling-svg-container">
-                    <svg></svg>
-                </div>
-            </div>
-            <div class="col-md-3 col-xs-3">
-                <div id="textDescription" style="height:250px;">
-                    <h3></h3>
-                    <p></p>
-                </div>
-            </div>
+        <div class="col-xs-8 col-md-8"></div>
+      </div>
+      <div class="row" id="canvas">
+        <div class="col-md-9 col-xs-9">
+          <div class="scaling-svg-container">
+            <svg></svg>
+          </div>
         </div>
-        <div class="row">
-            <div class="col-xs-12 col-md-12" id="source">
-                <footnote></footnote>
-            </div>
+        <div class="col-md-3 col-xs-3">
+          <div id="textDescription" style="height: 250px;">
+            <h3></h3>
+            <p></p>
+          </div>
         </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12 col-md-12" id="source">
+          <footnote></footnote>
+        </div>
+      </div>
     </div>
 
     <script src="js/spin.min.js" type="text/javascript"></script>
     <script src="js/d3.v4.min.js" type="text/javascript"></script>
-    <script src="js/d3-scale-chromatic.v1.min.js" type="text/javascript"></script>
+    <script
+      src="js/d3-scale-chromatic.v1.min.js"
+      type="text/javascript"
+    ></script>
     <script src="js/topojson-client@3.js" type="text/javascript"></script>
     <script src="js/d3-legend.js" type="text/javascript"></script>
     <script defer type="text/javascript">
-        "use strict";
+      "use strict";
 
-        // default view for map
-        let measure = 'dailysunlight';
+      // default view for map
+      let measure = "dailysunlight";
 
-        // define data and its attributes
-        const cols = {
-            "countywinrate": {
-                "label": "County Win Rate",
-                "type": "percentage",
-                "format": ".0%",
-                "title": "2016 Presidential Election Results",
-                "latestyear": "2016",
-                "url": "https://github.com/tonmcg/County_Level_Election_Results_12-16",
-                "source": "Tony McGovern GitHub Repo",
-                "description": "Results of the 2016 Presidential General Election."
-            },
-            "income": {
-                "label": "Income Ratio",
-                "type": "number",
-                "format": ",.0f",
-                "title": "Income inequality",
-                "latestyear": "2015",
-                "url": "http://www.countyhealthrankings.org/measure/income-inequality",
-                "source": "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
-                "description": "Income Inequality is the ratio of household income at the 80th percentile to that at the 20th percentile, i.e., when the incomes of all households in a county are listed from highest to lowest, the 80th percentile is the level of income at which only 20% of households have higher incomes, and the 20th percentile is the level of income at which only 20% of households have lower incomes. A higher inequality ratio indicates greater division between the top and bottom ends of the income spectrum."
-            },
-            "dailysunlight": {
-                "label": "Average Daily Sunlight",
-                "type": "number",
-                "format": ",.1f",
-                "title": "Daily Sunlight (KJ/m²) (1979-2011)",
-                "latestyear": "2015",
-                "url": "https://wonder.cdc.gov/NASA-INSOLAR.html",
-                "source": "North America Land Data Assimilation System (NLDAS)",
-                "description": "The North America Land Data Assimilation System (NLDAS) Daily Sunlight data available on CDC WONDER are county-level daily sunlight (insolation or solar radiation) observations spanning the years 1979-2011. Reported measures are the average daily insolation, reported in kilojoules per square meter (KJ/m2), the number of observations, and the range for the daily insolation values."
-            }
-        };
+      // define data and its attributes
+      const cols = {
+        countywinrate: {
+          label: "County Win Rate",
+          type: "percentage",
+          format: ".0%",
+          title: "2016 Presidential Election Results",
+          latestyear: "2016",
+          url: "https://github.com/tonmcg/County_Level_Election_Results_12-16",
+          source: "Tony McGovern GitHub Repo",
+          description: "Results of the 2016 Presidential General Election.",
+        },
+        income: {
+          label: "Income Ratio",
+          type: "number",
+          format: ",.0f",
+          title: "Income inequality",
+          latestyear: "2015",
+          url: "http://www.countyhealthrankings.org/measure/income-inequality",
+          source:
+            "University of Wisconsin Population Health Institute/Robert Wood Johnson Foundation",
+          description:
+            "Income Inequality is the ratio of household income at the 80th percentile to that at the 20th percentile, i.e., when the incomes of all households in a county are listed from highest to lowest, the 80th percentile is the level of income at which only 20% of households have higher incomes, and the 20th percentile is the level of income at which only 20% of households have lower incomes. A higher inequality ratio indicates greater division between the top and bottom ends of the income spectrum.",
+        },
+        dailysunlight: {
+          label: "Average Daily Sunlight",
+          type: "number",
+          format: ",.1f",
+          title: "Daily Sunlight (KJ/m²) (1979-2011)",
+          latestyear: "2015",
+          url: "https://wonder.cdc.gov/NASA-INSOLAR.html",
+          source: "North America Land Data Assimilation System (NLDAS)",
+          description:
+            "The North America Land Data Assimilation System (NLDAS) Daily Sunlight data available on CDC WONDER are county-level daily sunlight (insolation or solar radiation) observations spanning the years 1979-2011. Reported measures are the average daily insolation, reported in kilojoules per square meter (KJ/m2), the number of observations, and the range for the daily insolation values.",
+        },
+      };
 
-        // spinner loader settings
-        const opts = {
-            lines: 9, // The number of lines to draw
-            length: 9, // The length of each line
-            width: 5, // The line thickness
-            radius: 14, // The radius of the inner circle
-            color: '#c10e19', // #rgb or #rrggbb or array of colors
-            speed: 1.9, // Rounds per second
-            trail: 40, // Afterglow percentage
-            className: 'spinner', // The CSS class to assign to the spinner
-        };
+      // spinner loader settings
+      const opts = {
+        lines: 9, // The number of lines to draw
+        length: 9, // The length of each line
+        width: 5, // The line thickness
+        radius: 14, // The radius of the inner circle
+        color: "#c10e19", // #rgb or #rrggbb or array of colors
+        speed: 1.9, // Rounds per second
+        trail: 40, // Afterglow percentage
+        className: "spinner", // The CSS class to assign to the spinner
+      };
 
-        // create spinner
-        let target = d3.select("body").node();
+      // create spinner
+      let target = d3.select("body").node();
 
-        // trigger loader
-        let spinner = new Spinner(opts).spin(target);
+      // trigger loader
+      let spinner = new Spinner(opts).spin(target);
 
-        // create tooltip
-        let tooltip = d3.select("body").append("div").style("position", "absolute").style("z-index", "10").style("visibility", "hidden").attr("class", "tooltip");
+      // create tooltip
+      let tooltip = d3
+        .select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .attr("class", "tooltip");
 
-        // select element
-        let measureSelect = d3.select('#dimensions');
+      // select element
+      let measureSelect = d3.select("#dimensions");
 
-        let width = 960;
-        let height = 720;
+      let width = 960;
+      let height = 720;
 
-        let projection = d3.geoAlbersUsa()
-            .scale(1285)
-            .translate([width / 2, height / 2]);
+      let projection = d3
+        .geoAlbersUsa()
+        .scale(1285)
+        .translate([width / 2, height / 2]);
 
-        let path = d3.geoPath()
-            .projection(null);
+      let path = d3.geoPath().projection(null);
 
-        // use Susie Lu's d3-legend plugin
-        // http://d3-legend.susielu.com/
-        let d3legend = d3.legendColor()
-            .shapeWidth(width / 10)
-            .cells(9)
-            .orient("horizontal")
-            .labelOffset(10)
-            .ascending(true)
-            .labelAlign("middle")
-            .shapePadding(5);
+      // use Susie Lu's d3-legend plugin
+      // http://d3-legend.susielu.com/
+      let d3legend = d3
+        .legendColor()
+        .shapeWidth(width / 10)
+        .cells(9)
+        .orient("horizontal")
+        .labelOffset(10)
+        .ascending(true)
+        .labelAlign("middle")
+        .shapePadding(5);
 
-        let svg = d3.select("svg")
-            .attr("width", width)
-            .attr("height", height);
+      let svg = d3.select("svg").attr("width", width).attr("height", height);
 
-        // create options for select element
-        var selectEnter = measureSelect.selectAll('option').data(d3.keys(cols).sort()).enter();
+      // create options for select element
+      var selectEnter = measureSelect
+        .selectAll("option")
+        .data(d3.keys(cols).sort())
+        .enter();
 
-        var selectUpdate = selectEnter.append('option');
+      var selectUpdate = selectEnter.append("option");
 
-        selectUpdate.attr('value', function (d) {
-            return d;
-        }).text(function (d) {
-            return cols[d].title;
-        }).attr('selected', function (d) {
-            if (d == measure) {
-                return true;
-            }
+      selectUpdate
+        .attr("value", function (d) {
+          return d;
+        })
+        .text(function (d) {
+          return cols[d].title;
+        })
+        .attr("selected", function (d) {
+          if (d == measure) {
+            return true;
+          }
         });
 
-        let countyObj = {};
+      let countyObj = {};
 
-        function createMap(error, us, data) {
+      function createMap(error, us, data) {
+        if (error) throw error;
 
-            if (error) throw error;
+        // stop spin.js loader
+        spinner.stop();
 
-            // stop spin.js loader
-            spinner.stop();
+        // parse data
+        data.forEach(function (d) {
+          d.ratenaturalincrease = +d["Natural Increase Rate"];
+          d.netmigration = +d["Net Migration Rate"];
+          d.dailysunlight =
+            +d["Avg Daily Sunlight (KJ/m²)"] === 0
+              ? null
+              : +d["Avg Daily Sunlight (KJ/m²)"] || null;
+          d.countywinrate = +(d["County Win Rate"] * -1).toPrecision(3);
+          d.medianhouseholdincome = +d["Household Income"] || null;
+          d.residentialsegregation =
+            +d["Black/White Segregation index"] || null;
+          d.drugoverdose = +d["Drug Overdose Mortality Rate"] || null;
+          d.votingagepopulation = +d["Voting Age Population"] || null;
+          d.population = +d["Population"] || null;
+          d.averagepollution = +d["Average Daily PM2.5"] || null;
+          d.violentcrime = +d["Violent Crime Rate"] || null;
+          d.longcommute = +d["% Long Commute - Drives Alone"] || null;
+          d.physicallyinactive = +d["% Physically Inactive"] || null;
+          d.unemployment = +d["% Unemployed"] || null;
+          d.poorfair = +d["% Fair/Poor"] || null;
+          d.adultsmoking = +d["% Smokers"] || null;
+          d.childreninsingleparent = +d["% Single-Parent Households"] || null;
+          d.excessivedrink = +d["% Excessive Drinking"] || null;
+          d.income = +d["Income Ratio"] || null;
+          d.somecollege = +d["% Some College"] || null;
+          d.poormentalhealth = +d["Mentally Unhealthy Days"] || null;
+          d.poorphysicalhealth = +d["Physically Unhealthy Days"] || null;
+          d.sexuallytransmitted = +d["Chlamydia Rate"] || null; // new cases per 100,000
+          d.socialassociation = +d["Association Rate"] || null; // number of associations per 10,000 population
+          d.uninsured = +d["% Uninsured"] || null;
+          d.access = +d["% With Access"] || null;
+          d.teenbirth = +d["Teen Birth Rate"] || null; // number of births per 1,000 female population, ages 15-19
+          d.severehousingproblems = +d["% Severe Housing Problems"] || null;
+          d.diabetes = 100 - +d["% Receiving HbA1c"] || null;
+          d.numberofproviders = +d["Providers"] || null;
+          d.mentalhealth = +d["MHP Rate"] || null;
+          d.primarycare = +d["PCP Rate"] || null;
+          d.dentist = +d["Dentist Rate"] || null;
+          d.obesity = +d["% Obese"] || null;
+          d.foodenvironment =
+            +(10 - +d["Food Environment Index"]).toPrecision(3) || null;
+          countyObj[d.FIPS] = d;
+        });
 
-            // parse data
-            data.forEach(function (d) {
-                d.ratenaturalincrease = +d['Natural Increase Rate'];
-                d.netmigration = +d['Net Migration Rate'];
-                d.dailysunlight = +d['Avg Daily Sunlight (KJ/m²)'] === 0 ? null : +d['Avg Daily Sunlight (KJ/m²)'] || null;
-                d.countywinrate = +(d['County Win Rate'] * -1).toPrecision(3);
-                d.medianhouseholdincome = +d['Household Income'] || null;
-                d.residentialsegregation = +d['Black/White Segregation index'] || null;
-                d.drugoverdose = +d['Drug Overdose Mortality Rate'] || null;
-                d.votingagepopulation = +d['Voting Age Population'] || null;
-                d.population = +d['Population'] || null;
-                d.averagepollution = +d['Average Daily PM2.5'] || null;
-                d.violentcrime = +d['Violent Crime Rate'] || null;
-                d.longcommute = +d['% Long Commute - Drives Alone'] || null;
-                d.physicallyinactive = +d['% Physically Inactive'] || null;
-                d.unemployment = +(d['% Unemployed']) || null;
-                d.poorfair = +d['% Fair/Poor'] || null;
-                d.adultsmoking = +d['% Smokers'] || null;
-                d.childreninsingleparent = +d['% Single-Parent Households'] || null;
-                d.excessivedrink = +d['% Excessive Drinking'] || null;
-                d.income = +d['Income Ratio'] || null;
-                d.somecollege = +d['% Some College'] || null;
-                d.poormentalhealth = +d['Mentally Unhealthy Days'] || null;
-                d.poorphysicalhealth = +d['Physically Unhealthy Days'] || null;
-                d.sexuallytransmitted = +d['Chlamydia Rate'] || null; // new cases per 100,000
-                d.socialassociation = +d['Association Rate'] || null; // number of associations per 10,000 population
-                d.uninsured = +d['% Uninsured'] || null;
-                d.access = +d['% With Access'] || null;
-                d.teenbirth = +d['Teen Birth Rate'] || null; // number of births per 1,000 female population, ages 15-19
-                d.severehousingproblems = +d['% Severe Housing Problems'] || null;
-                d.diabetes = (100 - +d['% Receiving HbA1c']) || null;
-                d.numberofproviders = +d['Providers'] || null;
-                d.mentalhealth = +d['MHP Rate'] || null;
-                d.primarycare = +d['PCP Rate'] || null;
-                d.dentist = +d['Dentist Rate'] || null;
-                d.obesity = +d['% Obese'] || null;
-                d.foodenvironment = +(10 - +d['Food Environment Index']).toPrecision(3) || null;
-                countyObj[d.FIPS] = d;
-            });
+        let centered;
 
-            let centered;
+        // render map colors based on data
+        function renderMap() {
+          // counter for missing counties (usually in Alaska)
+          let countMissing = 0;
 
-            // render map colors based on data
-            function renderMap() {
+          let extent = d3.extent(data, function (d) {
+            return countyObj[d.FIPS][measure];
+          });
 
-                // counter for missing counties (usually in Alaska)
-                let countMissing = 0;
+          let color = d3
+            .scaleSequential()
+            .interpolator(
+              measure == "countywinrate"
+                ? d3.interpolateRdBu
+                : measure == "dailysunlight"
+                ? d3.interpolateRdYlBu
+                : measure == "ratenaturalincrease"
+                ? d3.interpolatePiYG
+                : d3.interpolateOranges
+            );
+          // let color = measure == 'countywinrate' ? d3.scaleSequential().interpolator(d3.interpolateRdBu) : d3.scaleQuantize().range(d3.schemeOranges[9]);
+          color.domain(
+            measure == "dailysunlight"
+              ? [extent[1], extent[0]]
+              : measure == "countywinrate"
+              ? [-100, 100]
+              : [extent[0], extent[1]]
+          );
 
-                let extent = d3.extent(data, function (d) {
-                    return countyObj[d.FIPS][measure];
-                });
+          d3legend
+            .labelFormat(function (d) {
+              let value;
 
-                let color = d3.scaleSequential().interpolator(measure == 'countywinrate' ? d3.interpolateRdBu : measure == 'dailysunlight' ? d3.interpolateRdYlBu : measure == 'ratenaturalincrease' ? d3.interpolatePiYG : d3.interpolateOranges);
-                // let color = measure == 'countywinrate' ? d3.scaleSequential().interpolator(d3.interpolateRdBu) : d3.scaleQuantize().range(d3.schemeOranges[9]);
-                color.domain(measure == 'dailysunlight' ? [extent[1], extent[0]] : measure == 'countywinrate' ? [-100, 100] : [extent[0], extent[1]]);
+              if (cols[measure].type == "percentage") {
+                value =
+                  measure == "countywinrate" ? Math.abs(d / 100) : d / 100;
+              } else {
+                value = measure == "countywinrate" ? Math.abs(d) : d;
+              }
+              return d3.format(cols[measure].format)(value);
+            })
+            .title(cols[measure].label)
+            .scale(color);
 
-                d3legend
-                    .labelFormat(function (d) {
-                        let value;
+          // if legend already exists, remove and create again
+          svg.select(".legend").remove();
 
-                        if (cols[measure].type == 'percentage') {
-                            value = measure == 'countywinrate' ? Math.abs(d / 100) : (d / 100);
-                        }
-                        else {
-                            value = measure == 'countywinrate' ? Math.abs(d) : d;
-                        }
-                        return d3.format(cols[measure].format)(value);
-                    })
-                    .title(cols[measure].label)
-                    .scale(color);
+          // create legend
+          let legend = svg
+            .append("g")
+            .attr("class", "legend")
+            .attr(
+              "transform",
+              "translate(" + width / 24 + "," + (height * 6) / 7 + ")"
+            );
 
-                // if legend already exists, remove and create again
-                svg.select('.legend').remove();
+          legend.call(d3legend);
 
-                // create legend
-                let legend = svg.append("g")
-                    .attr("class", "legend")
-                    .attr("transform", "translate(" + (width / 24) + "," + (height * 6 / 7) + ")");
-
-                legend
-                    .call(d3legend);
-
-                countyPath
-                    .transition()
-                    .duration(1000)
-                    .style("fill", function (d) {
-                        let county = countyObj[d.id];
-                        if (county && county[measure] === null) {
-                            console.log("FIPS Code: " + d.id + " " + countyObj[d.id].County + " does not have data");
-                            return '#ccc';
-                        }
-                        else if (county) {
-                            return color(county[measure]);
-                        }
-                        else {
-                            countMissing++;
-                            console.log("FIPS Code: " + d.id + " not found. Error #" + countMissing);
-                            return '#ccc';
-                        }
-                    });
-            }
-
-            // define zoom function
-            function zoomed() {
-                group.attr("transform", d3.event.transform);
-                // group.select(".nation").style("stroke-width", 0.5 / d3.event.scale + "px");
-                // group.select(".state-border").style("stroke-width", 0.5 / d3.event.scale + "px");
-                // group.select(".county-border").style("stroke-width", 0.1 / d3.event.scale + "px");
-            }
-
-            // When clicked, zoom in
-            function clicked(d) {
-                var x, y, k;
-
-                // Compute centroid of the selected path
-                if (d && centered !== d) {
-                    // if (d) {
-                    var centroid = path.centroid(d);
-                    x = centroid[0];
-                    y = centroid[1];
-                    // k = zoom.scaleExtent()[1];
-                    k = 10;
-                    centered = d;
-                }
-                else {
-                    x = width / 2;
-                    y = height / 2;
-                    k = 1;
-                    centered = null;
-                }
-
-                // Manually Zoom
-                svg.transition()
-                    .duration(750)
-                    .call(zoom.transform, d3.zoomIdentity
-                        .translate(width / 2, height / 2)
-                        .scale(k)
-                        .translate(-x, -y));
-            }
-
-            // create background box for zoom
-            svg.append("rect")
-                .attr("class", "background")
-                .attr("width", width)
-                .attr("height", height);
-
-            let zoom = d3.zoom()
-                .scaleExtent([1, 15])
-                .on("zoom", zoomed);
-
-            svg.style("pointer-events", "all")
-                .call(zoom);
-
-            let group = svg.append("g");
-
-            let countyPath = group.selectAll(".counties")
-                .data(topojson.feature(us, us.objects.counties).features)
-                .enter()
-                .append('path')
-                .attr("class", "county-border")
-                .on("click", clicked)
-                .attr("d", path);
-
-            group.append("path")
-                .datum(topojson.mesh(us, us.objects.states, function (a, b) {
-                    return a !== b;
-                }))
-                .attr("class", "state-border")
-                .attr("d", path);
-
-            group.append("path")
-                .datum(topojson.feature(us, us.objects.nation))
-                .attr("class", "nation-border")
-                .attr("d", path);
-
-            renderText();
-            renderMap();
-            bindHover();
-            setResponsiveSVG();
-
-            measureSelect.on('change', function (d) {
-                measure = this.value;
-                renderMap();
-                renderText();
-            });
-
-        }
-
-        // change factor description
-        function renderText() {
-
-            let textHeader = d3.select('#textDescription h3');
-            let textDescription = d3.select('#textDescription p');
-            let textFootnote = d3.select('#source > footnote');
-
-            let title = cols[measure].title;
-            let description = cols[measure].description;
-            let url = cols[measure].url;
-            let source = cols[measure].source;
-
-            textHeader.style("opacity", 0).transition().duration(1000).style("opacity", 1).text(title);
-            textDescription.style("opacity", 0).transition().duration(1000).style("opacity", 1).text(description);
-            textFootnote.html('<em>Source: </em><span><a href="' + url + '" target="_blank">' + source + '</span></a>');
-
-        }
-
-        // define mouseover and mouseout events
-        // to ensure mouseover events work on IE
-        function bindHover() {
-            document.body.addEventListener('mousemove', function (e) {
-
-                if (e.target.nodeName == 'path' && e.target.className.animVal !== 'state-border') {
-                    let d = d3.select(e.target).data()[0];
-                    let value = countyObj[d.id][measure];
-                    let content = '';
-                    if (value === null) {
-                        content = countyObj[d.id].County + ', ' + countyObj[d.id].State + '<br>' + 'No data';
-                    } else {
-                        value = cols[measure].type == 'percentage' ? measure == 'countywinrate' ? Math.abs(value / 100) : (value / 100) : value;
-                        content = countyObj[d.id].County + ', ' + countyObj[d.id].State + '<br>' + 'Voted for: ' + countyObj[d.id]['County Winner'] + '<br>' + cols[measure].label + ': ' + d3.format(cols[measure].format)(value);
-                    }
-
-                    showDetail(e, content);
-                }
-            });
-
-            document.body.addEventListener('mouseout', function (e) {
-                if (e.target.nodeName == 'path') hideDetail();
+          countyPath
+            .transition()
+            .duration(1000)
+            .style("fill", function (d) {
+              let county = countyObj[d.id];
+              if (county && county[measure] === null) {
+                console.log(
+                  "FIPS Code: " +
+                    d.id +
+                    " " +
+                    countyObj[d.id].County +
+                    " does not have data"
+                );
+                return "#ccc";
+              } else if (county) {
+                return color(county[measure]);
+              } else {
+                countMissing++;
+                console.log(
+                  "FIPS Code: " + d.id + " not found. Error #" + countMissing
+                );
+                return "#ccc";
+              }
             });
         }
 
-        // Show tooltip on hover
-        function showDetail(event, content) {
+        // define zoom function
+        function zoomed() {
+          group.attr("transform", d3.event.transform);
+          // group.select(".nation").style("stroke-width", 0.5 / d3.event.scale + "px");
+          // group.select(".state-border").style("stroke-width", 0.5 / d3.event.scale + "px");
+          // group.select(".county-border").style("stroke-width", 0.1 / d3.event.scale + "px");
+        }
 
-            // show tooltip with information from the __data__ property of the element
-            let x_hover = 0;
-            let y_hover = 0;
+        // When clicked, zoom in
+        function clicked(d) {
+          var x, y, k;
 
-            let tooltipWidth = parseInt(tooltip.style('width'));
-            let tooltipHeight = parseInt(tooltip.style('height'));
-            let classed, notClassed;
+          // Compute centroid of the selected path
+          if (d && centered !== d) {
+            // if (d) {
+            var centroid = path.centroid(d);
+            x = centroid[0];
+            y = centroid[1];
+            // k = zoom.scaleExtent()[1];
+            k = 10;
+            centered = d;
+          } else {
+            x = width / 2;
+            y = height / 2;
+            k = 1;
+            centered = null;
+          }
 
-            if (event.pageX > document.body.clientWidth / 2) {
-                x_hover = tooltipWidth + 30;
-                classed = 'right';
-                notClassed = 'left';
+          // Manually Zoom
+          svg
+            .transition()
+            .duration(750)
+            .call(
+              zoom.transform,
+              d3.zoomIdentity
+                .translate(width / 2, height / 2)
+                .scale(k)
+                .translate(-x, -y)
+            );
+        }
+
+        // create background box for zoom
+        svg
+          .append("rect")
+          .attr("class", "background")
+          .attr("width", width)
+          .attr("height", height);
+
+        let zoom = d3.zoom().scaleExtent([1, 15]).on("zoom", zoomed);
+
+        svg.style("pointer-events", "all").call(zoom);
+
+        let group = svg.append("g");
+
+        let countyPath = group
+          .selectAll(".counties")
+          .data(topojson.feature(us, us.objects.counties).features)
+          .enter()
+          .append("path")
+          .attr("class", "county-border")
+          .on("click", clicked)
+          .attr("d", path);
+
+        group
+          .append("path")
+          .datum(
+            topojson.mesh(us, us.objects.states, function (a, b) {
+              return a !== b;
+            })
+          )
+          .attr("class", "state-border")
+          .attr("d", path);
+
+        group
+          .append("path")
+          .datum(topojson.feature(us, us.objects.nation))
+          .attr("class", "nation-border")
+          .attr("d", path);
+
+        renderText();
+        renderMap();
+        bindHover();
+        setResponsiveSVG();
+
+        measureSelect.on("change", function (d) {
+          measure = this.value;
+          renderMap();
+          renderText();
+        });
+      }
+
+      // change factor description
+      function renderText() {
+        let textHeader = d3.select("#textDescription h3");
+        let textDescription = d3.select("#textDescription p");
+        let textFootnote = d3.select("#source > footnote");
+
+        let title = cols[measure].title;
+        let description = cols[measure].description;
+        let url = cols[measure].url;
+        let source = cols[measure].source;
+
+        textHeader
+          .style("opacity", 0)
+          .transition()
+          .duration(1000)
+          .style("opacity", 1)
+          .text(title);
+        textDescription
+          .style("opacity", 0)
+          .transition()
+          .duration(1000)
+          .style("opacity", 1)
+          .text(description);
+        textFootnote.html(
+          '<em>Source: </em><span><a href="' +
+            url +
+            '" target="_blank">' +
+            source +
+            "</span></a>"
+        );
+      }
+
+      // define mouseover and mouseout events
+      // to ensure mouseover events work on IE
+      function bindHover() {
+        document.body.addEventListener("mousemove", function (e) {
+          if (
+            e.target.nodeName == "path" &&
+            e.target.className.animVal !== "state-border"
+          ) {
+            let d = d3.select(e.target).data()[0];
+            let value = countyObj[d.id][measure];
+            let content = "";
+            if (value === null) {
+              content =
+                countyObj[d.id].County +
+                ", " +
+                countyObj[d.id].State +
+                "<br>" +
+                "No data";
+            } else {
+              value =
+                cols[measure].type == "percentage"
+                  ? measure == "countywinrate"
+                    ? Math.abs(value / 100)
+                    : value / 100
+                  : value;
+              content =
+                countyObj[d.id].County +
+                ", " +
+                countyObj[d.id].State +
+                "<br>" +
+                "Voted for: " +
+                countyObj[d.id]["County Winner"] +
+                "<br>" +
+                cols[measure].label +
+                ": " +
+                d3.format(cols[measure].format)(value);
             }
-            else {
-                x_hover = -30;
-                classed = 'left';
-                notClassed = 'right';
-            }
 
-            y_hover = (document.body.clientHeight - event.pageY < (tooltipHeight + 4)) ? event.pageY - (tooltipHeight + 4) : event.pageY - tooltipHeight / 2;
+            showDetail(e, content);
+          }
+        });
 
-            return tooltip
-                .classed(classed, true)
-                .classed(notClassed, false)
-                .style("visibility", "visible")
-                .style("top", y_hover + "px")
-                .style("left", (event.pageX - x_hover) + "px")
-                .html(content);
+        document.body.addEventListener("mouseout", function (e) {
+          if (e.target.nodeName == "path") hideDetail();
+        });
+      }
+
+      // Show tooltip on hover
+      function showDetail(event, content) {
+        // show tooltip with information from the __data__ property of the element
+        let x_hover = 0;
+        let y_hover = 0;
+
+        let tooltipWidth = parseInt(tooltip.style("width"));
+        let tooltipHeight = parseInt(tooltip.style("height"));
+        let classed, notClassed;
+
+        if (event.pageX > document.body.clientWidth / 2) {
+          x_hover = tooltipWidth + 30;
+          classed = "right";
+          notClassed = "left";
+        } else {
+          x_hover = -30;
+          classed = "left";
+          notClassed = "right";
         }
 
-        // Hide tooltip on hover
-        function hideDetail() {
+        y_hover =
+          document.body.clientHeight - event.pageY < tooltipHeight + 4
+            ? event.pageY - (tooltipHeight + 4)
+            : event.pageY - tooltipHeight / 2;
 
-            // hide tooltip
-            return tooltip.style("visibility", "hidden");
-        }
+        return tooltip
+          .classed(classed, true)
+          .classed(notClassed, false)
+          .style("visibility", "visible")
+          .style("top", y_hover + "px")
+          .style("left", event.pageX - x_hover + "px")
+          .html(content);
+      }
 
-        // Many browsers -- IE particularly -- will not auto-size inline SVG
-        // IE applies default width and height sizing
-        // padding-bottom hack on a container solves IE inconsistencies in size
-        // https://css-tricks.com/scale-svg/#article-header-id-10
-        function setResponsiveSVG() {
-            let width = +d3.select('svg').attr('width');
-            let height = +d3.select('svg').attr('height');
-            let calcString = +(height / width) * 100 + "%";
+      // Hide tooltip on hover
+      function hideDetail() {
+        // hide tooltip
+        return tooltip.style("visibility", "hidden");
+      }
 
-            let svgElement = d3.select('svg');
-            let svgParent = d3.select(d3.select('svg').node().parentNode);
+      // Many browsers -- IE particularly -- will not auto-size inline SVG
+      // IE applies default width and height sizing
+      // padding-bottom hack on a container solves IE inconsistencies in size
+      // https://css-tricks.com/scale-svg/#article-header-id-10
+      function setResponsiveSVG() {
+        let width = +d3.select("svg").attr("width");
+        let height = +d3.select("svg").attr("height");
+        let calcString = +(height / width) * 100 + "%";
 
-            svgElement
-                .attr('class', 'scaling-svg')
-                .attr('preserveAspectRatio', 'xMinYMin')
-                .attr('viewBox', '0 0 ' + width + ' ' + height)
-                .attr('width', null)
-                .attr('height', null);
+        let svgElement = d3.select("svg");
+        let svgParent = d3.select(d3.select("svg").node().parentNode);
 
-            svgParent.style('padding-bottom', calcString);
-        }
+        svgElement
+          .attr("class", "scaling-svg")
+          .attr("preserveAspectRatio", "xMinYMin")
+          .attr("viewBox", "0 0 " + width + " " + height)
+          .attr("width", null)
+          .attr("height", null);
 
-        d3.queue()
-            .defer(d3.json, "https://unpkg.com/us-atlas@1/us/10m.json")
-            .defer(d3.csv, "https://raw.githubusercontent.com/tonmcg/us-presidential-election-results/master/public/data/chr.csv")
-            .await(createMap);
+        svgParent.style("padding-bottom", calcString);
+      }
+
+      d3.queue()
+        .defer(d3.json, "https://unpkg.com/us-atlas@1/us/10m.json")
+        .defer(
+          d3.csv,
+          "https://raw.githubusercontent.com/tonmcg/us-presidential-election-results/master/public/data/chr.csv"
+        )
+        .await(createMap);
     </script>
-</body>
-
+  </body>
 </html>
