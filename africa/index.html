@@ -214,8 +214,9 @@
             return +countryObj[d.adm0_a3_is][measure];
           });
 
-          let color = d3.scaleSequential().interpolator(d3.interpolateOranges);
-          color.domain([extent[0], extent[1]]);
+          // 將圖示比例尺翻轉過來，由小到大，由藍到紅
+          let color = d3.scaleSequential().interpolator(d3.interpolateRdYlBu);
+          color.domain([extent[1], extent[0]]);
 
           d3legend
             .labelFormat(function (d) {
