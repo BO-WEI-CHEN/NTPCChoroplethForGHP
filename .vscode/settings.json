@@ -4,7 +4,7 @@
   "workbench.preferredHighContrastColorTheme": "Solarized Light",
   "powermode.enabled": true,
   "powermode.presets": "particles",
-  // 抖動
+  // Jittering
   "powermode.enableShake": false,
   "powermode.backgroundMode": "mask",
   "powermode.explosionSize": 20,

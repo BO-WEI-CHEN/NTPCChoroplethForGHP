@@ -1,14 +1,17 @@
 body {
-  font-family: "Lora", serif;
+  font-family: "Microsoft JhengHei";
 }
 
 g > text {
   fill: #ffffff;
   font-size: large;
-  font-weight: bolder;
   font-family: "Microsoft JhengHei";
 }
 
+.legend {
+  font-size: larger;
+  font-family: "Microsoft JhengHei";
+}
 .country-border {
   fill: none;
   stroke: #000000;
@@ -24,8 +27,8 @@ g > text {
 }
 
 .continent {
-  fill: #222;
-  stroke: #fff;
+  fill: none;
+  stroke: #ffffff;
 }
 
 .continent :hover {
@@ -37,16 +40,15 @@ g > text {
   left: 100px;
   -moz-border-radius: 5px;
   border-radius: 5px;
-  /*border: 2px solid #000;*/
-  background: #333;
+  background: #1a1919;
   opacity: 0.9;
   color: white;
   padding: 10px;
   min-width: 375px;
   min-width: 36.75vmin;
-  font-size: 2.25vmin;
+  font-size: 1vmin;
   line-height: 24pt;
-  font-family: "Lora", serif;
+  font-family: "Microsoft JhengHei";
   font-weight: lighter;
   visibility: visible;
 }
@@ -80,22 +82,6 @@ g > text {
   top: 65px;
   /* arbitrarily set */
 }
-
-/* SVG Scaling */
-
-/*body,*/
-
-/*svg {*/
-
-/*    height: 100%;*/
-
-/*    margin: 0;*/
-
-/*    width: 100%;*/
-
-/*    float: left;*/
-
-/*}*/
 
 .scaling-svg-container {
   position: relative;
