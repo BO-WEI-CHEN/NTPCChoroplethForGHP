@@ -12,16 +12,6 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-xs-12 col-md-12">
-        <div id="title" class="page-header">
-          <h2>
-            新北市政府食安智慧監控中心
-            <small>民眾檢舉、專案及政策執行狀況面量圖</small>
-          </h2>
-        </div>
-      </div>
-    </div>
-    <div class="row">
       <div class="col-xs-4 col-md-4">
         <div class="form-group">
           <label for="dimensions" class="col-form-label">請選擇面量圖應用範圍 </label>
@@ -37,7 +27,7 @@
         </div>
       </div>
       <div class="col-md-3 col-xs-3">
-        <div id="textDescription" style="height: 250px;">
+        <div id="textDescription" style="height: 500px;">
           <h3></h3>
           <p></p>
         </div>
@@ -56,32 +46,30 @@
   <script src="https://unpkg.com/topojson-client@3" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.11.0/d3-legend.js" type="text/javascript"></script>
   <script defer type="text/javascript">
+
     // default view for map
     let measure = "mortalityrate";
 
     const cols = {
       mortalityrate: {
-        label: "民眾檢舉",
+        label: "民眾檢舉案件",
         type: "number",
         format: ",.0f",
-        title: "民眾檢舉案件面量圖",
-        latestyear: "2016",
+        title: "民眾檢舉案件",
         url: "https://www.health.ntpc.gov.tw/",
         source: "新北市政府衛生局食安智慧監控中心",
         description:
-          "掌理藥物及食品衛生業務輔導管理；用藥安全推廣及宣導、藥物化粧品廣告審查；食品製造業、販賣業及各類公共飲食場所衛生提升、各類食品抽驗及營養標示管理、食品中毒事件及校園飲食安全之處理、國民營養全面推動及各項宣導。",
+          "民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件",
       },
       dyingyoung: {
-        label: "Probability Dying Young",
-        type: "percentage",
-        format: ".1%",
-        title:
-          "Probability of dying at age 5-14 years (per 1,000 children age 5)",
-        latestyear: "2016",
+        label: "專案執行",
+        type: "number",
+        format: ",.0f",
+        title: "專案執行",
         url: "https://www.health.ntpc.gov.tw/",
         source: "新北市政府衛生局食安智慧監控中心",
         description:
-          "Estimates Developed by the UN Inter-agency Group for Child Mortality Estimation ( UNICEF, WHO, World Bank, UN DESA Population Division )",
+          "專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行",
       },
     };
 
@@ -116,30 +104,19 @@
     let measureSelect = d3.select("#dimensions");
 
     let width = 1000;
-    let height = 800;
-
-    // 使用d3.geoMercator()來定義投影模式
-    // 並以center定義經緯度位置
-    // scale定義縮放比例尺
-    let projection = d3
-      .geoMercator()
-      .center([190, -15])
-      .scale(400)
-      .translate([height, width]);
-
-    let path = d3.geoPath().projection(projection);
+    let height = 950;
 
     // use Susie Lu's d3-legend plugin
     // http://d3-legend.susielu.com/
     let d3legend = d3
       .legendColor()
-      .shapeWidth(width / 10)
-      .cells(9)
+      .shapeWidth(width / 18)
+      .cells(15)
       .orient("horizontal")
-      .labelOffset(3)
+      .labelOffset(10)
       .ascending(true)
       .labelAlign("middle")
-      .shapePadding(2);
+      .shapePadding(5);
 
     let svg = d3.select("svg").attr("width", width).attr("height", height);
 
@@ -165,12 +142,23 @@
       });
 
     let countryObj = {};
-
     function createMap(error, NTPC, data) {
       if (error) throw error;
 
       // stop spin.js loader
       spinner.stop();
+
+      // 使用d3.geoMercator()來定義投影模式
+      // 並以center定義經緯度位置
+      // scale定義縮放比例尺
+      let projection = d3
+        .geoMercator()
+        .center([(NTPC.bbox[2] + NTPC.bbox[0]) / 2, (NTPC.bbox[3] + NTPC.bbox[1]) / 2])
+        .scale(Math.min(width / (NTPC.bbox[2] - NTPC.bbox[0]),
+          height / (NTPC.bbox[3] - NTPC.bbox[1])) * 50)
+        .translate([width / 1.9, height / 2.2]);
+
+      let path = d3.geoPath().projection(projection);
 
       data.forEach(function (d) {
         d.mortalityrate = +d["Mortality Rate"];
@@ -330,12 +318,15 @@
         .transition()
         .duration(1000)
         .style("opacity", 1)
+        .style("font-size", "large")
+        .style("font-weight", "bold")
         .text(title);
       textDescription
         .style("opacity", 0)
         .transition()
         .duration(1000)
         .style("opacity", 1)
+        .style("font-size", "20px")
         .text(description);
       textFootnote.html(
         '<em>Source: </em><span><a href="' +
@@ -365,7 +356,7 @@
               countryObj[d.id]["mortalityrate"] +
               "<br>" +
               "Probability of Dying Young: " +
-              d3.format(".1%")(countryObj[d.id]["dyingyoung"] / 100);
+              countryObj[d.id]["dyingyoung"];
           }
           showDetail(e, content);
         }
@@ -440,11 +431,11 @@
     d3.queue()
       .defer(
         d3.json,
-        "/json/NTPC.json"
+        "/json/NTPC29.json"
       )
       .defer(
         d3.csv,
-        "/data.csv"
+        "/data/data.csv"
       )
       .await(createMap);
   </script>

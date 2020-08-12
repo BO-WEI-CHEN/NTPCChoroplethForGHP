@@ -2,16 +2,17 @@ body {
   font-family: "Microsoft JhengHei";
 }
 
-g > text {
+text {
   fill: #ffffff;
   font-size: large;
   font-family: "Microsoft JhengHei";
 }
 
 .legend {
-  font-size: larger;
+  font-size: 20px;
   font-family: "Microsoft JhengHei";
 }
+
 .country-border {
   fill: none;
   stroke: #000000;
@@ -28,7 +29,7 @@ g > text {
 
 .continent {
   fill: none;
-  stroke: #ffffff;
+  stroke: #000000;
 }
 
 .continent :hover {
@@ -36,21 +37,21 @@ g > text {
 }
 
 .tooltip {
+  white-space: pre-line;
   top: 100px;
   left: 100px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  background: #1a1919;
-  opacity: 0.9;
-  color: white;
+  border: 0.87px solid #ffffff;
+  border-radius: 8.7px;
+  background: #031217;
+  opacity: 0.8;
+  color: #ffffff;
   padding: 10px;
-  min-width: 375px;
-  min-width: 36.75vmin;
-  font-size: 1vmin;
-  line-height: 24pt;
+  font-size: 1.5vmin;
+  line-height: 25pt;
   font-family: "Microsoft JhengHei";
   font-weight: lighter;
   visibility: visible;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
 }
 
 .tooltip.right::before {
@@ -92,7 +93,7 @@ g > text {
 
 .scaling-svg {
   position: absolute;
-  height: 99%;
+  height: 100%;
   width: 100%;
   left: 0;
   top: 0;
