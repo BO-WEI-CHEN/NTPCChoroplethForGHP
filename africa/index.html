@@ -153,6 +153,7 @@
       // scale定義縮放比例尺
       let projection = d3
         .geoMercator()
+        // center, scale以及translate皆要視傳入的topojson中的bbox來決定
         .center([(NTPC.bbox[2] + NTPC.bbox[0]) / 2, (NTPC.bbox[3] + NTPC.bbox[1]) / 2])
         .scale(Math.min(width / (NTPC.bbox[2] - NTPC.bbox[0]),
           height / (NTPC.bbox[3] - NTPC.bbox[1])) * 50)
@@ -428,6 +429,7 @@
       svgParent.style("padding-bottom", calcString);
     }
 
+    // 傳入資料
     d3.queue()
       .defer(
         d3.json,

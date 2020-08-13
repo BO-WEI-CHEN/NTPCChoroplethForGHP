@@ -4,9 +4,13 @@
   "workbench.preferredHighContrastColorTheme": "Solarized Light",
   "powermode.enabled": true,
   "powermode.presets": "particles",
+
   // Jittering
   "powermode.enableShake": false,
   "powermode.backgroundMode": "mask",
   "powermode.explosionSize": 20,
-  "editor.wordWrap": "on"
+
+  // about editor
+  "editor.wordWrap": "on",
+  "editor.fontFamily": "'Fira Code', monospace"
 }
