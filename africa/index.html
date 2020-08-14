@@ -12,6 +12,13 @@
 <body>
   <div class="container">
     <div class="row">
+      <div class="col-xs-12 col-md-12">
+        <div id="title" class="page-header">
+          <h2>案件面量圖 <small>民眾檢舉案件、專案執行及政策執行狀況</small></h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-xs-4 col-md-4">
         <div class="form-group">
           <label for="dimensions" class="col-form-label">請選擇面量圖應用範圍 </label>
@@ -48,10 +55,10 @@
   <script defer type="text/javascript">
 
     // default view for map
-    let measure = "mortalityrate";
+    let measure = "合格數";
 
     const cols = {
-      mortalityrate: {
+      合格數: {
         label: "民眾檢舉案件",
         type: "number",
         format: ",.0f",
@@ -61,7 +68,7 @@
         description:
           "民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件",
       },
-      dyingyoung: {
+      不合格數: {
         label: "專案執行",
         type: "number",
         format: ",.0f",
@@ -109,6 +116,7 @@
     // use Susie Lu's d3-legend plugin
     // http://d3-legend.susielu.com/
     let d3legend = d3
+
       .legendColor()
       .shapeWidth(width / 18)
       .cells(15)
@@ -162,8 +170,8 @@
       let path = d3.geoPath().projection(projection);
 
       data.forEach(function (d) {
-        d.mortalityrate = +d["Mortality Rate"];
-        d.dyingyoung = +d["Prob of Dying"];
+        d.合格數 = +d["合格數"];
+        d.不合格數 = +d["不合格數"];
         countryObj[d.id] = d;
       });
 
@@ -171,6 +179,20 @@
 
       // render map colors based on data
       function renderMap() {
+
+        // points
+        aa = [121.490402, 24.786453];
+        bb = [121.542370, 25.057956];
+        console.log(path(aa), projection(bb));
+        // add circles to svg
+        svg.selectAll("circle")
+          .data([aa, bb]).enter()
+          .append("circle")
+          .attr("cx", function (d) { console.log(projection(d)); return projection(d)[0]; })
+          .attr("cy", function (d) { return projection(d)[1]; })
+          .attr("r", "8.7px")
+          .attr("fill", "red");
+
         // counter for missing counties (usually in Alaska)
         let countMissing = 0;
 
@@ -185,7 +207,7 @@
         d3legend
           .labelFormat(function (d) {
             let value;
-
+            // 若有百分比之計算，則以百分比呈現legend
             if (cols[measure].type == "percentage") {
               value = d / 100;
             } else {
@@ -206,8 +228,7 @@
           .attr(
             "transform",
             "translate(" + width / 24 + "," + (height * 6) / 7 + ")"
-          );
-
+          )
         legend.call(d3legend);
 
         countryPath
@@ -246,7 +267,7 @@
           x = centroid[0];
           y = centroid[1];
           // k = zoom.scaleExtent()[1];
-          k = 10;
+          k = 3;
           centered = d;
         } else {
           x = width / 2;
@@ -289,6 +310,19 @@
         .append("path")
         .attr("class", "country-border")
         .on("click", clicked)
+
+        .on("mouseover", function (d, i) {
+          d3.select(this)
+            .style("stroke", "#ffffff")
+            .style("stroke-width", "3px")
+
+        })
+        .on("mouseout", function (d, i) {
+          d3.select(this)
+            .style("stroke", "#000000")
+            .style("stroke-width", "0.1487px")
+        })
+
         .attr("d", path);
 
       renderMap();
@@ -353,11 +387,11 @@
               "<b>" +
               d.name +
               "<br>" +
-              "Mortality Rate: " +
-              countryObj[d.id]["mortalityrate"] +
+              "食品良好衛生規範準則(GHP)查核-合格數: " +
+              countryObj[d.id]["合格數"] +
               "<br>" +
-              "Probability of Dying Young: " +
-              countryObj[d.id]["dyingyoung"];
+              "食品良好衛生規範準則(GHP)查核-不合格數: " +
+              countryObj[d.id]["不合格數"];
           }
           showDetail(e, content);
         }
