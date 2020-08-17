@@ -1,5 +1,4 @@
 {
-  "workbench.colorTheme": "monokai-chacoral (white)",
   "workbench.preferredDarkColorTheme": "dark-plus-syntax",
   "workbench.preferredHighContrastColorTheme": "Solarized Light",
   "powermode.enabled": true,
@@ -12,5 +11,6 @@
 
   // about editor
   "editor.wordWrap": "on",
-  "editor.fontFamily": "'Fira Code', monospace"
+  "editor.fontFamily": "'Fira Code', monospace",
+  "workbench.colorTheme": "monokai-chacoral"
 }

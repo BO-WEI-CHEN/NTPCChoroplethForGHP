@@ -25,6 +25,16 @@
           <select class="form-control" id="dimensions"></select>
         </div>
       </div>
+
+      <div class="col-xs-4 col-md-4">
+        <div id=buttonPeople>
+          <button type="button" class="btn btn-primary btn-rounded">民眾檢舉落點</button>
+        </div>
+        <div id=buttonProject>
+          <button type="button" class="btn btn-danger btn-rounded">專案執行落點</button>
+        </div>
+      </div>
+
       <div class="col-xs-8 col-md-8"></div>
     </div>
     <div class="row" id="canvas">
@@ -41,8 +51,8 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-xs-12 col-md-12" id="source">
-        <footnote></footnote>
+      <div class="col-xs-12 col-md-12">
+        <footer></footer>
       </div>
     </div>
   </div>
@@ -63,8 +73,6 @@
         type: "number",
         format: ",.0f",
         title: "民眾檢舉案件",
-        url: "https://www.health.ntpc.gov.tw/",
-        source: "新北市政府衛生局食安智慧監控中心",
         description:
           "民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件民眾檢舉案件",
       },
@@ -73,8 +81,6 @@
         type: "number",
         format: ",.0f",
         title: "專案執行",
-        url: "https://www.health.ntpc.gov.tw/",
-        source: "新北市政府衛生局食安智慧監控中心",
         description:
           "專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行專案執行",
       },
@@ -180,18 +186,18 @@
       // render map colors based on data
       function renderMap() {
 
-        // points
-        aa = [121.490402, 24.786453];
-        bb = [121.542370, 25.057956];
-        console.log(path(aa), projection(bb));
+        // 錨點範例
         // add circles to svg
-        svg.selectAll("circle")
-          .data([aa, bb]).enter()
-          .append("circle")
-          .attr("cx", function (d) { console.log(projection(d)); return projection(d)[0]; })
-          .attr("cy", function (d) { return projection(d)[1]; })
-          .attr("r", "8.7px")
-          .attr("fill", "red");
+        d3.csv("/data/map-location.csv", function (data) {
+          dataset = data.map(function (d) { return [+d["lont"], +d["lat"]]; });
+          svg.selectAll("circle")
+            .data(dataset).enter()
+            .append("circle")
+            .attr("cx", function (d) { console.log(projection(d)); return projection(d)[0]; })
+            .attr("cy", function (d) { return projection(d)[1]; })
+            .attr("r", "5px")
+            .attr("fill", "#ff0000")
+        });
 
         // counter for missing counties (usually in Alaska)
         let countMissing = 0;
@@ -253,7 +259,8 @@
 
       // define zoom function
       function zoomed() {
-        group.attr("transform", d3.event.transform);
+        group
+          .attr("transform", d3.event.transform);
       }
 
       // When clicked, zoom in
@@ -279,7 +286,8 @@
         // Manually Zoom
         svg
           .transition()
-          .duration(750)
+          // 調整地圖放大縮小的速度
+          .duration(900)
           .call(
             zoom.transform,
             d3.zoomIdentity
@@ -314,7 +322,7 @@
         .on("mouseover", function (d, i) {
           d3.select(this)
             .style("stroke", "#ffffff")
-            .style("stroke-width", "3px")
+            .style("stroke-width", "1.87px")
 
         })
         .on("mouseout", function (d, i) {
@@ -341,12 +349,10 @@
     function renderText() {
       let textHeader = d3.select("#textDescription h3");
       let textDescription = d3.select("#textDescription p");
-      let textFootnote = d3.select("#source > footnote");
 
       let title = cols[measure].title;
       let description = cols[measure].description;
       let url = cols[measure].url;
-      let source = cols[measure].source;
 
       textHeader
         .style("opacity", 0)
@@ -363,13 +369,6 @@
         .style("opacity", 1)
         .style("font-size", "20px")
         .text(description);
-      textFootnote.html(
-        '<em>Source: </em><span><a href="' +
-        url +
-        '" target="_blank">' +
-        source +
-        "</span></a>"
-      );
     }
 
     // define mouseover and mouseout events
@@ -388,10 +387,10 @@
               d.name +
               "<br>" +
               "食品良好衛生規範準則(GHP)查核-合格數: " +
-              countryObj[d.id]["合格數"] +
+              countryObj[d.id]["合格數"] + " 件" +
               "<br>" +
               "食品良好衛生規範準則(GHP)查核-不合格數: " +
-              countryObj[d.id]["不合格數"];
+              countryObj[d.id]["不合格數"] + " 件";
           }
           showDetail(e, content);
         }
