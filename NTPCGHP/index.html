@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="/africa/NTPCGHP.css" />
+  <link rel="stylesheet" href="/NTPCGHP/NTPCGHP.css" />
 </head>
 
 <body>
@@ -42,7 +42,7 @@
 
         <!--以下為按鈕事件：網頁瀏覽者點選不同的落點範圍，可以看到不同的錨點-->
         <div class="wrap">
-          <button class="button">民眾檢舉落點</button>
+          <button class="button">民眾檢舉案件落點</button>
         </div>
         <br>
         <div class="wrap">
@@ -192,18 +192,19 @@
         // add circles to svg
         d3.csv("/data/map-location.csv", function (data) {
           //傳入資料取得經緯度
-          dataset = data.map(function (d) { return [+d["lont"], +d["lat"]]; });
+          dataset = data.map(function (d) { return [+d["lont"], +d["lat"], d["address"]]; });
           svg.selectAll("image")
             .data(dataset)
             .enter()
             .append("image")
             .attr("xlink:href", "/img/supplier_gray.png")
-            .attr('width', 15)
-            .attr('height', 15)
-
+            .attr('width', 20)
+            .attr('height', 20)
             /*cx cy跟x y的差異？*/
             .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
             .attr("y", function (d) { console.log(projection(d)); return projection(d)[1]; })
+            .on("mouseover", function (d, i) {
+            })
         });
 
         // counter for missing counties (usually in Alaska)
@@ -381,6 +382,7 @@
         .text(description);
     }
 
+    // 29區合格數、不合格數
     // define mouseover and mouseout events
     // to ensure mouseover events work on IE
     function bindHover() {
@@ -412,7 +414,9 @@
     }
 
     // Show tooltip on hover
+    // 新北市29區GHP合格、不合格數
     function showDetail(event, content) {
+
       // show tooltip with information from the __data__ property of the element
       let x_hover = 0;
       let y_hover = 0;

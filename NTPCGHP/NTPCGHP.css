@@ -138,7 +138,7 @@ button::before {
   border-radius: 1000px;
   min-width: calc(200px + 12px);
   min-height: calc(60px + 12px);
-  border: 3px solid #fee440;
+  border: 7.5px solid #fee440;
   box-shadow: 0 0 60px #0077b6;
   position: absolute;
   top: 50%;
