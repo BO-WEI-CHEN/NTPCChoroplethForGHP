@@ -1,6 +1,8 @@
 body {
   font-family: "Microsoft JhengHei";
 }
+html, body { margin:0; padding:0; overflow:hidden }
+svg { position:fixed; top:0; left:0; height:100%; width:100% }
 
 text {
   fill: #ffffff;
@@ -10,7 +12,7 @@ text {
 
 /* On mouse hover, lighten district color */
 path:hover {
-  fill-opacity: 0.6;
+  fill-opacity: 0.5;
 }
 
 .legend {
@@ -41,8 +43,13 @@ path:hover {
   fill: #8a8a8a;
 }
 
+.tooltippoint {
+  font-size: 16px;
+  font-family: "Microsoft JhengHei";
+  font-weight: bolder;
+}
+
 .tooltip {
-  white-space: pre-line;
   top: 100px;
   left: 100px;
   text-align: left;
@@ -138,7 +145,7 @@ button::before {
   border-radius: 1000px;
   min-width: calc(200px + 12px);
   min-height: calc(60px + 12px);
-  border: 7.5px solid #fee440;
+  border: 7px solid #fee440;
   box-shadow: 0 0 60px #0077b6;
   position: absolute;
   top: 50%;

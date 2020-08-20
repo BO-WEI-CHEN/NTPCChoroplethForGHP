@@ -1,6 +1,5 @@
 {
-  "workbench.preferredDarkColorTheme": "Sublime VSCode Theme",
-  "workbench.preferredHighContrastColorTheme": "Default Dark+",
+  "workbench.preferredDarkColorTheme": "monokai-chacoral",
   "powermode.enabled": true,
   "powermode.presets": "particles",
 
@@ -11,6 +10,6 @@
 
   // about editor
   "editor.wordWrap": "on",
-  "editor.fontFamily": "'Consolas', monospace",
-  "workbench.colorTheme": "Monokai"
+  "workbench.colorTheme": "monokai-chacoral",
+  "editor.fontFamily": "'Fira Code', monospace"
 }

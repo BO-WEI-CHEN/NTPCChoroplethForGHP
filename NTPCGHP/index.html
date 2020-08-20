@@ -189,21 +189,40 @@
       function renderMap() {
 
         // 錨點範例
-        // add circles to svg
+        // add local image of map point to svg
         d3.csv("/data/map-location.csv", function (data) {
           //傳入資料取得經緯度
-          dataset = data.map(function (d) { return [+d["lont"], +d["lat"], d["address"]]; });
-          svg.selectAll("image")
+          dataset = data.map(function (d) { return [+d["lont"], +d["lat"], d["address"], d["name"]]; });
+          svg
+            .selectAll("image")
             .data(dataset)
             .enter()
             .append("image")
             .attr("xlink:href", "/img/supplier_gray.png")
-            .attr('width', 20)
-            .attr('height', 20)
+            .attr('width', 15)
+            .attr('height', 15)
+
             /*cx cy跟x y的差異？*/
             .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
             .attr("y", function (d) { console.log(projection(d)); return projection(d)[1]; })
-            .on("mouseover", function (d, i) {
+
+            .on("mouseover", function (d) {
+              svg
+                .append("svg:text")
+                // 調整text顯示位置
+                .attr("x", 500)
+                .attr("y", 800)
+                .attr("class", "tooltippoint")
+                .text("業者名稱: " + d[3])
+                // wrapping the text: 分行顯示
+                // 調整text顯示位置
+                .append("svg:tspan")
+                .attr("x", 500)
+                .attr("y", 830)
+                .text("業者地址: " + d[2]);
+            })
+            .on("mouseout", function (d) {
+              d3.select(".tooltippoint").remove();
             })
         });
 
