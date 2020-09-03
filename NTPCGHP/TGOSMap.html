@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>ArcGIS Online API</title>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+    <!--引用ArcGIS API for JavaScript-->
+    <link rel="stylesheet" type="text/css" href="https://js.arcgis.com/4.5/esri/css/main.css">
+    <script type="text/javascript" src="https://js.arcgis.com/4.5/dojo/dojo.js"></script>
+    <!--引用Framework.js 和 AjaxAgent.js-->
+    <script type="text/javascript"
+        src="/TGOS_MAP_API/Web/Sample_Codes/TGOSMapAPI/QuickExample/ArcGIS/scripts/Framework.js"></script>
+    <script type="text/javascript"
+        src="/TGOS_MAP_API/Web/Sample_Codes/TGOSMapAPI/QuickExample/ArcGIS/scripts/AjaxAgent.js"></script>
+    <script type="text/javascript">
+        require([
+            "esri/Map",
+            "esri/config",
+            "esri/request",
+            "esri/Color",
+            "esri/views/MapView",
+            "esri/layers/BaseTileLayer",
+            "esri/geometry/Extent",
+            "esri/layers/support/TileInfo",
+            "dojo/domReady!"
+        ], function (
+            Map, esriConfig, esriRequest, Color,
+            MapView, BaseTileLayer, Extent, TileInfo
+        ) {
+            var SGSTileLayer = BaseTileLayer.createSubclass({
+                load: function () {
+                    this._url = this.urlTemplate;
+                    this._resource = null;
+                    this._layer = this.nlayer;
+
+                    var pThis = this;
+                    var url = this._url + "/GetCacheConfig?FORMAT=JSON";
+                    LoadScript(url, function () {
+                        var pNodeRes = result.Infomation;
+                        if (!pNodeRes)
+                            return;
+                        this._resource = pNodeRes.ResourceName;			//取得TGOS圖磚服務名稱
+                        var ImgWidth = parseInt(pNodeRes.TileWidth);
+                        var ImgHeight = parseInt(pNodeRes.TileHeight);
+                        var dCLeft = parseFloat(pNodeRes.CornerLeft);
+                        var dCLower = parseFloat(pNodeRes.CornerLower);
+
+                        var pEnv = pNodeRes.Envelope;
+                        var dCacheLeft = parseFloat(pEnv.Left);
+                        var dCacheTop = parseFloat(pEnv.Top);
+                        var dCacheRight = parseFloat(pEnv.Right);
+                        var dCacheBottom = parseFloat(pEnv.Bottom);
+                        require(["esri/geometry/SpatialReference"], function (SpatialReference) {
+                            pThis.spatialReference = new SpatialReference(3857);
+                        });
+
+                        pThis.initialExtent = (pThis.fullExtent = new Extent({ xmin: dCacheLeft, ymin: dCacheBottom, xmax: dCacheRight, ymax: dCacheTop, spatialReference: pThis.spatialReference }));
+
+                        var resolutions = new Array();
+                        var pSclss = pNodeRes.Scales;
+                        var pScls = pSclss.Scale;
+                        if (pScls) {
+                            if (pScls.length > 0) {
+                                for (var i = 0; i < pScls.length; i++) {
+                                    var pScl = pScls[i];
+                                    var dem;
+                                    if (pScl.Denominator)
+                                        dem = parseFloat(pScl.Denominator);
+                                    else
+                                        dem = parseFloat(pScl._text);
+                                    var fac = parseFloat(pScl.Factor);
+                                    resolutions.push({ level: i, scale: dem, resolution: fac });
+                                }
+                            }
+                        }
+
+                        pThis.tileInfo = new TileInfo(
+                            {
+                                "dpi": "96",
+                                "format": "image/png",
+                                "compressionQuality": 0,
+                                "spatialReference": { "wkid": "3857" },
+                                "rows": ImgWidth,
+                                "cols": ImgHeight,
+                                //"size" : 256,
+                                "origin": { "x": dCLeft, "y": dCLower },
+                                "lods": resolutions
+                            });
+                    });
+                },
+                properties: {
+                    urlTemplate: null,
+                    tint: {
+                        value: null,
+                        type: Color
+                    }
+                },
+                getTileUrl: function (level, row, col) {
+                    var scnt = this.tileInfo.lods.length;
+                    var sUrl = this._url + "/GetCacheImage?APPID=" + this.appid + "&APIKEY=" + this.apikey + "&S=" + (scnt - level - 1) + "&X=" + col + "&Y=" + (-row - 1) + "&L=" + this._layer;
+                    return sUrl;
+                },
+
+                fetchTile: function (level, row, col) {
+                    var url = this.getTileUrl(level, row, col);
+
+                    return esriRequest(url, {
+                        responseType: "image",
+                        allowImageDataAccess: true
+                    })
+                        .then(function (response) {
+                            var image = response.data;
+                            var width = this.tileInfo.size[0];
+                            var height = this.tileInfo.size[0];
+
+                            // create a canvas with 2D rendering context
+                            var canvas = document.createElement("canvas");
+                            var context = canvas.getContext("2d");
+                            canvas.width = width;
+                            canvas.height = height;
+
+                            if (this.tint) {
+                                context.fillStyle = this.tint.toCss();
+                                context.fillRect(0, 0, width, height);
+                                context.globalCompositeOperation = "difference";
+                            }
+
+                            context.drawImage(image, 0, 0, width, height);
+
+                            return canvas;
+                        }.bind(this));
+                }
+            });
+
+            //設定ESRI API的 CROS
+            esriConfig.request.corsEnabledServers.push("https://api.tgos.tw/");
+
+            //建立與TGOS tileagent的連接
+            var service = "https://api.tgos.tw/TileAgent/";	//設定圖磚代理服務位址
+            //設定TGOS圖磚類型
+            var BaseMap = "TGOSMAP_W.aspx";				//TGOS電子地圖
+            //var BaseMap = "NLSCMAP_W.aspx";           //台灣通用電子地圖
+            //var BaseMap = "F2IMAGE_W.aspx";           //福衛二號影像
+            //var BaseMap = "ROADMAP_W.aspx";           //福衛二號混合圖
+            //var BaseMap = "HILLSHADE_W.aspx";         //地形暈渲圖
+            //var BaseMap = "HILLSHADEMIX_W.aspx";      //地形暈渲混合圖
+            //var BaseMap = "SEGISMAP_W.aspx"; 	        //統計區MAP
+            var _url = service + BaseMap;				//組合TGOS圖磚服務位址
+            var TileLayer = new SGSTileLayer({
+                urlTemplate: _url,
+                title: "TGOSMAP",
+                nlayer: "0",
+                //TGOS KEY
+                appid: "SvvgzXSVAe1qNE9nSkmCVB8KkhhgmUpiyY/Cy0Afx/MXjoaKle9HKQ==",
+                apikey: "cGEErDNy5yNTw4lb4fzGu/McHxMCS5EcRZcuDv8qGbbzGr5FybEjh+utuJUZvxLQUkMASq8MtNX/JF7WZfjLkEEkAn+b666PrbqMvXHEMOrYeQ/+Xw7EAUsJdCHv4Z5VaZ22733fP2nSWOOm1tHX7K8ecw9Xl28fSfOqME8/HDzJ90dOrpCCQYwzbSF/HPzVkMbGZ72LOzGDllRUVK19DHj3vKJzcMrLgxa1V+6Yq+flV9xG19HNqcRUXd8WIGSeCHPuBb14FyGFl116S+BXP6ejr0VzA04xgvgscAEBqoFw3K4UH+1vCHT0lDXFOkI3RmG2WWwgi0x7WTz6sy+6bWHwUEV3xnWe"
+            });
+
+            // add the new instance of the custom tile layer the map
+            var map = new Map({
+                basemap: "satellite"
+            });
+
+            // create a new scene view and add the map
+            var view = new MapView({
+                container: "OMap",
+                map: map,
+                center: [121.551, 25.036],
+                zoom: 17
+            });
+
+            map.add(TileLayer);
+        });		
+    </script>
+</head>
+
+<body style="margin: 0px">
+    <div id="OMap" style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"></div>
+</body>
+
+</html>
