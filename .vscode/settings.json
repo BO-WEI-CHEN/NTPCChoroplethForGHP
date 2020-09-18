@@ -11,5 +11,6 @@
   // about editor
   "editor.wordWrap": "on",
   "workbench.colorTheme": "monokai-chacoral",
-  "editor.fontFamily": "'Fira Code', monospace"
+  "editor.fontFamily": "'Fira Code', monospace",
+  "liveServer.settings.CustomBrowser": "safari"
 }
