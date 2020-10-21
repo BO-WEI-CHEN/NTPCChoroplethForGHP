@@ -10,7 +10,8 @@
 
   // about editor
   "editor.wordWrap": "on",
-  "workbench.colorTheme": "monokai-chacoral",
-  "editor.fontFamily": "'Fira Code', monospace",
-  "liveServer.settings.CustomBrowser": "chrome"
+  "workbench.colorTheme": "monokai-charcoal (white)",
+  "editor.fontFamily": "'Consolas', monospace",
+  "liveServer.settings.CustomBrowser": "safari",
+  "git.ignoreLimitWarning": true
 }

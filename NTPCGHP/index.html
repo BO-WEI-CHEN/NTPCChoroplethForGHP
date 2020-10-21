@@ -62,6 +62,7 @@
   <script defer type="text/javascript">
 
     // default view for map
+    // GIS地圖一開始load進來所預設的主題呈現方式
     let measure = "合格數";
 
     const cols = {
@@ -71,7 +72,7 @@
         format: ",.0f",
         title: "民眾檢舉案件",
         description:
-          "在違法案件未經發覺並開始調查前，檢舉人可以採書面、口頭、電話、傳真、電子郵件或其他適當方式向衛生局檢舉，並留下相關個人資料與具體檢舉事證，即完成受理。",
+          "在違法案件未經發覺並開始調查前，檢舉人可以採書面、口頭、電話、傳真、電子郵件或其他適當方式向衛生局檢舉，並留下相關個人資料與具體檢舉事證，即完成受理。"
       },
       不合格數: {
         label: "專案執行",
@@ -79,8 +80,16 @@
         format: ",.0f",
         title: "專案執行",
         description:
-          "專案執行",
+          "新北市政府衛生局食品藥物管理科輔導轄內食品業者。"
       },
+      綜合指數: {
+        label: "政策執行狀況",
+        type: "number",
+        format: ",.2f",
+        title: "政策執行狀況",
+        description:
+          "檢視新北市政府衛生局食品藥物管理科輔導轄內食品業者之政策執行狀況是否符合民眾檢舉落點之現狀。"
+      }
     };
 
     // spinner loader settings
@@ -106,15 +115,15 @@
       .select("body")
       .append("div")
       .style("position", "absolute")
-      .style("z-index", "10")
+      .style("z-index", "5")
       .style("visibility", "hidden")
       .attr("class", "tooltip");
 
     // select element
     let measureSelect = d3.select("#dimensions");
 
-    let width = 1000;
-    let height = 950;
+    let width = 1500;
+    let height = 1340;
 
     // use Susie Lu's d3-legend plugin
     // http://d3-legend.susielu.com/
@@ -164,58 +173,60 @@
       // scale定義縮放比例尺
       let projection = d3
         .geoMercator()
-
         // center, scale以及translate皆要視傳入的topojson中的bbox來決定
         .center([(NTPC.bbox[2] + NTPC.bbox[0]) / 2, (NTPC.bbox[3] + NTPC.bbox[1]) / 2])
         .scale(Math.min(width / (NTPC.bbox[2] - NTPC.bbox[0]),
           height / (NTPC.bbox[3] - NTPC.bbox[1])) * 50)
-        .translate([width / 1.9, height / 2.2]);
+        .translate([width / 1.9, height / 2.1]);
 
       // 錨點範例
       // add local image of map point to svg
-      let mapPoint =
-        d3.csv("/data/map-location.csv", function (data) {
-          //傳入資料取得經緯度
-          dataset = data.map(function (d) { return [+d["lont"], +d["lat"], d["address"], d["name"]]; });
-          svg
-            .selectAll("image")
-            .data(dataset)
-            .enter()
-            .append("image")
-            .attr("xlink:href", "/img/supplier_gray.png")
-            .attr('width', 15)
-            .attr('height', 15)
+      // let mapPoint =
+      //   d3.csv("/data/map-location.csv", function (data) {
+      //     //傳入資料取得經緯度
+      //     dataset = data.map(function (d) { return [+d["lont"], +d["lat"], d["address"], d["name"]]; });
+      //     svg
+      //       .selectAll("image")
+      //       .data(dataset).enter()
+      //       .append("image")
+      //       .attr("xlink:href", "/img/supplier_gray.png")
+      //       .attr('width', 20)
+      //       .attr('height', 20)
+      //       //.attr("r","5px")
+      //       //.attr("fill","red")
+      //       /*cx cy跟x y的差異？*/
+      //       .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
+      //       .attr("y", function (d) { console.log(projection(d)); return projection(d)[1]; })
 
-            /*cx cy跟x y的差異？*/
-            .attr("x", function (d) { console.log(projection(d)); return projection(d)[0]; })
-            .attr("y", function (d) { console.log(projection(d)); return projection(d)[1]; })
-
-            .on("mouseover", function (d) {
-              svg
-                .append("svg:text")
-                // 調整text顯示位置
-                .attr("x", 500)
-                .attr("y", 800)
-                .attr("class", "tooltippoint")
-                .text("業者名稱- " + d[3])
-                // wrapping the text: 分行顯示
-                // 調整text顯示位置
-                .append("svg:tspan")
-                .attr("x", 500)
-                .attr("y", 830)
-                .text("業者地址- " + d[2]);
-            })
-            .on("mouseout", function (d) {
-              d3.select(".tooltippoint").remove();
-            })
-            .on("click", clicked)
-        });
+      //       .on("mouseover", function (d) {
+      //         svg
+      //           .append("svg:text")
+      //           // 調整text顯示位置
+      //           .attr("x", 750)
+      //           .attr("y", 1140)
+      //           .attr("class", "tooltippoint")
+      //           .text("業者名稱- " + d[3])
+      //           .style("font-size", "22px")
+      //           // wrapping the text: 分行顯示
+      //           // 調整text顯示位置
+      //           .append("svg:tspan")
+      //           .attr("x", 750)
+      //           .attr("y", 1170)
+      //           .text("業者地址- " + d[2])
+      //           .style("font-size", "22px")
+      //       })
+      //       .on("mouseout", function (d) {
+      //         d3.select(".tooltippoint").remove()
+      //       })
+      //       .attr("d", path);
+      //   });
 
       let path = d3.geoPath().projection(projection);
 
       data.forEach(function (d) {
         d.合格數 = +d["合格數"];
         d.不合格數 = +d["不合格數"];
+        d.綜合指數 = +d["綜合指數"];
         countryObj[d.id] = d;
       });
 
@@ -264,7 +275,7 @@
 
         countryPath
           .transition()
-          .duration(1000)
+          .duration(750)
           .style("fill", function (d) {
             let country = countryObj[d.properties.id];
             if (country && country[measure] === null) {
@@ -284,8 +295,7 @@
 
       // define zoom function
       function zoomed() {
-        group
-          .attr("transform", d3.event.transform);
+        group.attr("transform", d3.event.transform);
       }
 
       // When clicked, zoom in
@@ -312,7 +322,7 @@
         svg
           .transition()
           // 調整地圖放大縮小的速度
-          .duration(870)
+          .duration(750)
           .call(
             zoom.transform,
             d3.zoomIdentity
@@ -329,7 +339,10 @@
         .attr("width", width)
         .attr("height", height);
 
-      let zoom = d3.zoom().scaleExtent([1, 15]).on("zoom", zoomed);
+      let zoom = d3
+        .zoom()
+        .scaleExtent([1, 15])
+        .on("zoom", zoomed);
 
       svg.style("pointer-events", "all").call(zoom);
 
@@ -348,17 +361,15 @@
         .on("mouseover", function (d, i) {
           d3.select(this)
             .style("stroke", "#ffffff")
-            .style("stroke-width", "1px")
-
+            .style("stroke-width", "0.5px")
         })
 
-        //滑鼠移開該區，該區取消白色線圈起來，改以黑色恢復原狀
+        // 滑鼠移開該區，該區取消白色線圈起來，改以黑色恢復原狀
         .on("mouseout", function (d, i) {
           d3.select(this)
             .style("stroke", "#000000")
-            .style("stroke-width", "0.1487px")
+            .style("stroke-width", "0.5px")
         })
-
         .attr("d", path);
 
       renderMap();
@@ -415,11 +426,14 @@
               "<b>" +
               d.name +
               "<br>" +
-              "食品良好衛生規範準則(GHP)查核-合格數- " +
-              countryObj[d.id]["合格數"] + " 件" +
+              "食品良好衛生規範準則(GHP)查核-合格數：" +
+              countryObj[d.id]["合格數"] + "件" +
               "<br>" +
-              "食品良好衛生規範準則(GHP)查核-不合格數- " +
-              countryObj[d.id]["不合格數"] + " 件";
+              "食品良好衛生規範準則(GHP)查核-不合格數：" +
+              countryObj[d.id]["不合格數"] + "件" +
+              "<br>" +
+              "食品良好衛生規範準則(GHP)查核-綜合指數：" +
+              countryObj[d.id]["綜合指數"] + "";
           }
           showDetail(e, content);
         }
@@ -432,6 +446,7 @@
 
     // Show tooltip on hover
     // 新北市29區GHP合格、不合格數
+    // 注意：非29區每一區案件數
     function showDetail(event, content) {
 
       // show tooltip with information from the __data__ property of the element
@@ -490,7 +505,8 @@
         .attr("width", null)
         .attr("height", null);
 
-      svgParent.style("padding-bottom", calcString);
+      svgParent.
+        style("padding-bottom", calcString);
     }
 
     // 傳入資料

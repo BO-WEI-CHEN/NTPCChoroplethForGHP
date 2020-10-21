@@ -13,7 +13,7 @@ g > text {
 .state-border,
 .county-border {
   fill: none;
-  stroke: #ffffff;
+  stroke: #000000;
 }
 
 .county-border {

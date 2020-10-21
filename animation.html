@@ -99,22 +99,35 @@
                     label: years[i],
                     args: [[years[i]], {
                         mode: 'immediate',
-                        transition: { duration: 300 },
-                        frame: { duration: 300, redraw: false },
+                        transition: { duration: 1000 },
+                        frame: { duration: 1000, redraw: false },
                     }]
                 });
             }
 
             var layout = {
+                height: "900",
+                // width: "100%",
+                font: {
+                    color: '#ffffff',
+                    size: 16,
+                    family: "Microsoft JhengHei"
+                },
                 xaxis: {
+                    showgrid: true,
+                    color: '#ffffff',
                     title: 'Life Expectancy',
-                    range: [30, 85]
+                    range: [10, 100]
                 },
                 yaxis: {
+                    showgrid: true,
+                    color: '#ffffff',
                     title: 'GDP per Capita',
                     type: 'log'
                 },
-                hovermode: 'closest',
+                paper_bgcolor: '#37474f',
+                plot_bgcolor: '#37474f',
+                hovermode: 'x unified',
                 // We'll use updatemenus (whose functionality includes menus as
                 // well as buttons) to create a play button and a pause button.
                 // The play button works by passing `null`, which indicates that
@@ -136,8 +149,8 @@
                         args: [null, {
                             mode: 'immediate',
                             fromcurrent: true,
-                            transition: { duration: 300 },
-                            frame: { duration: 500, redraw: false }
+                            transition: { duration: 400 },
+                            frame: { duration: 400, redraw: false }
                         }],
                         label: 'Play'
                     }, {
