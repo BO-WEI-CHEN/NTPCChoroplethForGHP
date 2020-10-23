@@ -1,0 +1,39 @@
+<head>
+	<!-- Load plotly.js into the DOM -->
+	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+</head>
+
+<body>
+	<div id='myDiv'>
+		<!-- Plotly chart will be drawn inside this DIV -->
+	</div>
+	<script defer type="text/javascript">
+		Plotly.d3.csv(
+			"https://raw.githubusercontent.com/plotly/datasets/master/2015_06_30_precipitation.csv",
+			function (err, rows) {
+				function unpack(rows, key) {
+					return rows.map(function (row) {
+						return row[key];
+					});
+				}
+				var data = [
+					{
+						type: "scattermapbox",
+						text: unpack(rows, "Globvalue"),
+						lon: unpack(rows, "Lon"),
+						lat: unpack(rows, "Lat"),
+						marker: { color: "fuchsia", size: 4 }
+					}
+				];
+				var layout = {
+					height: 920,
+					// width: "100%",
+					dragmode: "zoom",
+					mapbox: { style: "stamen-terrain", center: { lat: 25.023157, lon: 121.4580659 }, zoom: 10 },
+					margin: { r: 0, t: 0, b: 0, l: 0 }
+				};
+				Plotly.newPlot("myDiv", data, layout);
+			}
+		);
+	</script>
+</body>

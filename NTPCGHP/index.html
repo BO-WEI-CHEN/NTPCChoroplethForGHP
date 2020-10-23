@@ -63,11 +63,11 @@
 
     // default view for map
     // GIS地圖一開始load進來所預設的主題呈現方式
-    let measure = "合格數";
+    let DefaultMeasure = "合格數";
 
     const cols = {
       合格數: {
-        label: "民眾檢舉案件",
+        label: "民眾檢舉案件面量圖",
         type: "number",
         format: ",.0f",
         title: "民眾檢舉案件",
@@ -75,7 +75,7 @@
           "在違法案件未經發覺並開始調查前，檢舉人可以採書面、口頭、電話、傳真、電子郵件或其他適當方式向衛生局檢舉，並留下相關個人資料與具體檢舉事證，即完成受理。"
       },
       不合格數: {
-        label: "專案執行",
+        label: "專案執行面量圖",
         type: "number",
         format: ",.0f",
         title: "專案執行",
@@ -83,7 +83,7 @@
           "新北市政府衛生局食品藥物管理科輔導轄內食品業者。"
       },
       綜合指數: {
-        label: "政策執行狀況",
+        label: "政策執行狀況面量圖",
         type: "number",
         format: ",.2f",
         title: "政策執行狀況",
@@ -156,7 +156,7 @@
         return cols[d].title;
       })
       .attr("selected", function (d) {
-        if (d == measure) {
+        if (d == DefaultMeasure) {
           return true;
         }
       });
@@ -239,7 +239,7 @@
         let countMissing = 0;
 
         let extent = d3.extent(data, function (d) {
-          return +countryObj[d.id][measure];
+          return +countryObj[d.id][DefaultMeasure];
         });
 
         // 將圖示比例尺翻轉過來，由小到大，由藍到紅
@@ -250,14 +250,14 @@
           .labelFormat(function (d) {
             let value;
             // 若有百分比之計算，則以百分比呈現legend
-            if (cols[measure].type == "percentage") {
+            if (cols[DefaultMeasure].type == "percentage") {
               value = d / 100;
             } else {
               value = d;
             }
-            return d3.format(cols[measure].format)(value);
+            return d3.format(cols[DefaultMeasure].format)(value);
           })
-          .title(cols[measure].label)
+          .title(cols[DefaultMeasure].label)
           .scale(color);
 
         // if legend already exists, remove and create again
@@ -278,11 +278,11 @@
           .duration(750)
           .style("fill", function (d) {
             let country = countryObj[d.properties.id];
-            if (country && country[measure] === null) {
+            if (country && country[DefaultMeasure] === null) {
               console.log(country.Country + " does not have data");
               return "#ccc";
             } else if (country) {
-              return color(country[measure]);
+              return color(country[DefaultMeasure]);
             } else {
               countMissing++;
               console.log(
@@ -378,7 +378,7 @@
       setResponsiveSVG();
 
       measureSelect.on("change", function (d) {
-        measure = this.value;
+        DefaultMeasure = this.value;
         renderMap();
         renderText();
       });
@@ -389,9 +389,9 @@
       let textHeader = d3.select("#textDescription h3");
       let textDescription = d3.select("#textDescription p");
 
-      let title = cols[measure].title;
-      let description = cols[measure].description;
-      let url = cols[measure].url;
+      let title = cols[DefaultMeasure].title;
+      let description = cols[DefaultMeasure].description;
+      let url = cols[DefaultMeasure].url;
 
       textHeader
         .style("opacity", 0)
@@ -417,7 +417,7 @@
       document.body.addEventListener("mousemove", function (e) {
         if (e.target.nodeName == "path") {
           let d = d3.select(e.target).data()[0].properties;
-          let value = countryObj[d.id][measure];
+          let value = countryObj[d.id][DefaultMeasure];
           let content = "";
           if (value === null) {
             content = countryObj[d.id].name + ": " + "No data";

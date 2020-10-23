@@ -17,7 +17,7 @@ svg {
 
 text {
   fill: #ffffff;
-  font-size: 30px;
+  font-size: 32.5px;
   font-family: "Microsoft JhengHei";
 }
 
@@ -27,7 +27,7 @@ path:hover {
 }
 
 .legend {
-  font-size: 27px;
+  font-size: 30px;
   font-family: "Microsoft JhengHei";
 }
 
