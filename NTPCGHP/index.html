@@ -25,7 +25,6 @@
           <select class="form-control" id="dimensions"></select>
         </div>
       </div>
-
       <div class="col-xs-8 col-md-8"></div>
     </div>
     <div class="row" id="canvas">
@@ -128,7 +127,6 @@
     // use Susie Lu's d3-legend plugin
     // http://d3-legend.susielu.com/
     let d3legend = d3
-
       .legendColor()
       .shapeWidth(width / 18)
       .cells(15)
@@ -162,6 +160,8 @@
       });
 
     let countryObj = {};
+
+    // 以下為GIS地圖繪圖主程式
     function createMap(error, NTPC, data) {
       if (error) throw error;
 

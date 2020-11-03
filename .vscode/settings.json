@@ -1,5 +1,5 @@
 {
-  "workbench.preferredDarkColorTheme": "Visual Studio Dark",
+  "workbench.preferredDarkColorTheme": "One Dark Pro",
   "powermode.enabled": true,
   "powermode.presets": "particles",
 
@@ -11,9 +11,9 @@
   // about editor
   "editor.wordWrap": "on",
   "editor.fontFamily": "'Consolas', monospace",
-  "liveServer.settings.CustomBrowser": "safari",
+  "liveServer.settings.CustomBrowser": "chrome",
   "git.ignoreLimitWarning": true,
-  "workbench.preferredHighContrastColorTheme": "Visual Studio Dark",
-  "workbench.preferredLightColorTheme": "Visual Studio Dark",
-  "workbench.colorTheme": "One Dark Theme"
+  "workbench.preferredHighContrastColorTheme": "One Dark Pro",
+  "workbench.preferredLightColorTheme": "One Dark Pro",
+  "workbench.colorTheme": "One Dark Pro"
 }
